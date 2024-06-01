@@ -12,7 +12,6 @@ help:
 
 ## info: Show project information
 info:
-	@echo "Project: $(PROJECT_NAME)"
 	@echo "Git Tag:           ${GIT_TAG}"
 	@echo "Git Commit:        ${GIT_COMMIT}"
 	@echo "Git Tree State:    ${GIT_DIRTY}"
@@ -33,10 +32,12 @@ importcheck:
 fmtcheck:
 	@"$(CURDIR)/scripts/fmt-check.sh"
 
-## check: Run all required checks
-check:
+## pre-commit: ⚠️ Run all required checks before commit
+pre-commit:
 	@make staticcheck
+	@echo "--------------------------------------------------------------------------------"
 	@make importcheck
+	@echo "--------------------------------------------------------------------------------"
 	@make fmtcheck
 
 .NOTPARALLEL:
