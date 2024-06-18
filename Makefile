@@ -20,25 +20,19 @@ info:
 generate:
 	@go generate ./...
 
-## staticcheck: Run static check using honnef.co/go/tools/cmd/staticcheck
-staticcheck:
-	@"$(CURDIR)/scripts/static-check.sh"
+## test: Run tests
+test:
+	@"$(CURDIR)/scripts/test.sh"
 
-## importcheck: Run import check using golang.org/x/tools/cmd/goimports
-importcheck:
-	@"$(CURDIR)/scripts/import-check.sh"
-
-## fmtcheck: Run format check using go fmt
-fmtcheck:
-	@"$(CURDIR)/scripts/fmt-check.sh"
+## check: Run all required static checks
+check:
+	@"$(CURDIR)/scripts/check.sh"
 
 ## pre-commit: ⚠️ Run all required checks before commit
 pre-commit:
-	@make staticcheck
+	@make check
 	@echo "--------------------------------------------------------------------------------"
-	@make importcheck
-	@echo "--------------------------------------------------------------------------------"
-	@make fmtcheck
+	@make test
 
 .NOTPARALLEL:
 

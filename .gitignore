@@ -44,3 +44,5 @@ fabric.properties
 *.test
 *.out
 go.work
+*.cov
+node_modules/

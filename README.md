@@ -1,44 +1,53 @@
-# Project Structure
+# VN Gateway
 
-## `/cmd`
+This project is a gateway for the VN project. It is responsible for handling all the incoming requests and routing them
+to the appropriate services. It also handles the authentication and authorization of the requests. The gateway is built
+on top of the [Go](https://golang.org/) programming language and uses the [Fiber](https://gofiber.io/) framework.
 
-Main applications for the project are stored here. Thumb rules:
+## Project structure
 
-- Each application should have its own directory.
-- Do NOT put a lot of code in the application directory. It is common to have a small `main` function that imports and
-  invokes the code from the `internal` and `pkg` directories and nothing else.
+The project follows the standard Go project layout. The structure of the project is as follows:
 
-## `/internal`
+```
+.
+├── .github                     # GitHub actions workflows
+├── .golangci.yml
+├── Dockerfile
+├── Makefile
+├── README.md
+├── cmd
+│   └── gateway
+│       └── main.go
+├── docs
+├── go.mod
+├── go.sum
+├── internal
+│   ├── config
+│   ├── middleware
+│   ├── models
+│   ├── routes
+│   ├── service
+│   ├── tools
+│   └── utils
+├── scripts
+└── test
+```
 
-Private application and library code. This is the code you don't want others importing in their applications or
-libraries. Note that this is enforced by Go.
+## Prerequisites installation
 
-## `/pkg`
+- [x] Install [Node.js (v.20.13.1+)](https://nodejs.org/en/download/)
+- [x] Install [Go 1.22.3+](https://golang.org/doc/install)
+- [x] Install [Docker Desktop](https://docs.docker.com/get-docker/)
+- [x] (For Windows users) Install [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install)
+- [x] (For Windows users) Install [Chocolatey](https://chocolatey.org/install) and
+  then run `choco install make` to install `make` command
 
-Library code that's ok to use by external applications. Other projects will import these
-libraries expecting them to work.
+## Prepare the environment
 
-## `/scripts`
+1. Run `npm run install` to install the project dependencies
+2. Run `npm run setup` to set up the project environment for local development
 
-Scripts to perform various build, install, analysis, etc. tasks. These scripts keep the root level `Makefile` small and
-clean.
-
-## `/docs`
-
-Design and user documents (in addition to your godoc generated documentation).
-
-## `/assets`
-
-Other assets to go along with your repository (images, logos, etc.).
-
-# Prerequisites
-
-- Install [Go 1.22.3](https://golang.org/doc/install)
-- Install [Docker](https://docs.docker.com/get-docker/)
-- For Windows only, install [Chocolatey](https://chocolatey.org/install) and
-  then run `choco install make`
-
-# ⚠️ Pre-commit ⚠️
+## ⚠️ Pre-commit ⚠️
 
 Make sure you have already run `make pre-commit` before committing your code. This will ensure that your code is
 properly formatted and passes all the tests.
