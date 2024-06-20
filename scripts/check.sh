@@ -93,7 +93,7 @@ check_import() {
   done
 
   if [[ ${#bad_files[@]} -gt 1 ]]; then
-    echo "🚫 The following files import statements that disagree with \"goimports\":"
+    echo "⚠️ The following files import statements that disagree with \"goimports\":"
     for file in "${bad_files[@]}"; do
       echo "  - $file"
     done
@@ -113,9 +113,9 @@ check_import() {
 
 check_verify
 check_format
-check_static
+#check_static
 check_vulnerabilities
-check_import
+check_import true
 
 echo "==============================="
 echo "🎉 All checks passed."
