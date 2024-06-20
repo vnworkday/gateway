@@ -3,8 +3,9 @@ package http
 import (
 	"context"
 	"errors"
-	"github.com/gofiber/fiber/v2"
 	"time"
+
+	"github.com/gofiber/fiber/v2"
 
 	"go.uber.org/fx"
 )
