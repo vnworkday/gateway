@@ -1,4 +1,4 @@
-name: PR Check
+name: PR Lint
 on:
   pull_request:
     branches:
@@ -8,9 +8,12 @@ on:
       - 'go.mod'
       - '**.go'
       - '**.yml'
+permissions:
+  contents: read
+  checks: write
 jobs:
-  test:
-    name: Test on go ${{ matrix.go }} and ${{ matrix.os }}
+  lint:
+    name: Lint on go ${{ matrix.go }} and ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -23,34 +26,7 @@ jobs:
         uses: WillAbides/setup-go-faster@v1
         with:
           go-version: ${{ matrix.go }}
-      - name: Static Check
-        uses: reviewdog/action-staticcheck@v1
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-pr-review
-          filter_mode: nofilter
-          fail_on_error: true
       - name: GolangCI Lint
         uses: golangci/golangci-lint-action@v6
         with:
-          version: v1.58
-      - name: Unit Test
-        run: go test ./... -covermode=atomic -vet=all -coverprofile=profile.cov
-      - name: Send Coverage
-        uses: shogo82148/actions-goveralls@v1
-        if: ${{ matrix.os == 'ubuntu-latest' }}
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-profile: profile.cov
-          flag-name: Go-${{ matrix.go }}
-          parallel: true
-  # notifies that all test jobs are finished.
-  # https://github.com/shogo82148/actions-goveralls
-  finish:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: shogo82148/actions-goveralls@v1.8.0
-        with:
-          parallel-finished: true
+          version: v1.59
