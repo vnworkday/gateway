@@ -13,6 +13,7 @@ import (
 // Server defines the interface for an HTTP server.
 // It is sealed to allow for easy implementation of the interface.
 type Server interface {
+	fiber.Router
 	// Listen serves HTTP requests from the given addr.
 	Listen(addr string) error
 	// Shutdown gracefully shuts down the server without interrupting any active connections.
@@ -26,26 +27,19 @@ type ServerProps struct {
 }
 
 func NewHTTPServer(props ServerProps) Server {
-	server := configureServer()
+	server := buildHTTPServer()
+
+	registerRoutes(server, props.Routers)
 
 	props.Lifecycle.Append(fx.Hook{
-		OnStart: func(ctx context.Context) error {
-			go func() {
-				if err := server.Listen(":3000"); err != nil {
-					panic(err)
-				}
-			}()
-			return nil
-		},
-		OnStop: func(ctx context.Context) error {
-			return server.Shutdown()
-		},
+		OnStart: onStart(server),
+		OnStop:  onStop(server),
 	})
 
 	return server
 }
 
-func configureServer() *fiber.App {
+func buildHTTPServer() Server {
 	app := fiber.New(fiber.Config{
 		BodyLimit:               fiber.DefaultBodyLimit, // 4 * 1024 * 1024 = 4MB
 		CaseSensitive:           true,
@@ -56,6 +50,15 @@ func configureServer() *fiber.App {
 		EnableTrustedProxyCheck: false,       // NOTE: We may want to enable this later
 		TrustedProxies:          []string{},  // NOTE: We may want to set this later after enabling EnableTrustedProxyCheck
 		ProxyHeader:             "",          // NOTE: We may want to set this later after enabling EnableTrustedProxyCheck
+
+		RequestMethods: []string{
+			fiber.MethodGet,
+			fiber.MethodPost,
+			fiber.MethodPut,
+			fiber.MethodDelete,
+			fiber.MethodPatch,
+			fiber.MethodOptions,
+		},
 
 		// The system is designed for low latency, exceeding 1 second should be considered as a performance issue and requires further investigation.
 		ReadTimeout:  time.Second, // NOTE: We may want to fine tune this later
@@ -77,7 +80,32 @@ func configureServer() *fiber.App {
 				"details": nil,
 			})
 		},
+
+		EnablePrintRoutes: true,
 	})
 
 	return app
+}
+
+func registerRoutes(rootRouter fiber.Router, routers []Router) {
+	for _, router := range routers {
+		rootRouter.Route(router.Path(), router.Register)
+	}
+}
+
+func onStart(server Server) func(context.Context) error {
+	return func(ctx context.Context) error {
+		go func() {
+			if err := server.Listen(":3000"); err != nil {
+				panic(err)
+			}
+		}()
+		return nil
+	}
+}
+
+func onStop(server Server) func(context.Context) error {
+	return func(ctx context.Context) error {
+		return server.Shutdown()
+	}
 }
