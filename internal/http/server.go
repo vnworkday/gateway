@@ -10,36 +10,26 @@ import (
 	"go.uber.org/fx"
 )
 
-// Server defines the interface for an HTTP server.
-// It is sealed to allow for easy implementation of the interface.
-type Server interface {
-	fiber.Router
-	// Listen serves HTTP requests from the given addr.
-	Listen(addr string) error
-	// Shutdown gracefully shuts down the server without interrupting any active connections.
-	Shutdown() error
-}
-
 type ServerProps struct {
 	fx.In
 	fx.Lifecycle
 	Routers []Router `group:"routers"`
 }
 
-func NewHTTPServer(props ServerProps) Server {
-	server := buildHTTPServer()
+func NewServer(props ServerProps) *fiber.App {
+	svr := buildHTTPServer()
 
-	registerRoutes(server, props.Routers)
+	registerRoutes(svr, props.Routers)
 
 	props.Lifecycle.Append(fx.Hook{
-		OnStart: onStart(server),
-		OnStop:  onStop(server),
+		OnStart: onStart(svr),
+		OnStop:  onStop(svr),
 	})
 
-	return server
+	return svr
 }
 
-func buildHTTPServer() Server {
+func buildHTTPServer() *fiber.App {
 	app := fiber.New(fiber.Config{
 		BodyLimit:               fiber.DefaultBodyLimit, // 4 * 1024 * 1024 = 4MB
 		CaseSensitive:           true,
@@ -60,11 +50,12 @@ func buildHTTPServer() Server {
 			fiber.MethodOptions,
 		},
 
-		// The system is designed for low latency, exceeding 1 second should be considered as a performance issue and requires further investigation.
+		// The system is designed for low latency.
+		// Exceeding 1 second should be considered as a performance issue and requires further investigation.
 		ReadTimeout:  time.Second, // NOTE: We may want to fine tune this later
 		WriteTimeout: time.Second, // NOTE: We may want to fine tune this later
 
-		ReduceMemoryUsage: false, // NOTE: We may want to enable this later if we have memory issues. Please note enabling this may cause CPU usage to increase.
+		ReduceMemoryUsage: false, // NOTE: We may want to enable this later if we have memory issues.
 
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
 			code := fiber.StatusInternalServerError
@@ -73,6 +64,7 @@ func buildHTTPServer() Server {
 				code = e.Code
 			}
 			ctx.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSONCharsetUTF8)
+
 			return ctx.Status(code).JSON(map[string]interface{}{
 				"code":    InternalError,
 				"title":   "Internal Server Error",
@@ -93,19 +85,20 @@ func registerRoutes(rootRouter fiber.Router, routers []Router) {
 	}
 }
 
-func onStart(server Server) func(context.Context) error {
-	return func(ctx context.Context) error {
+func onStart(server *fiber.App) func(context.Context) error {
+	return func(_ context.Context) error {
 		go func() {
 			if err := server.Listen(":3000"); err != nil {
 				panic(err)
 			}
 		}()
+
 		return nil
 	}
 }
 
-func onStop(server Server) func(context.Context) error {
-	return func(ctx context.Context) error {
+func onStop(server *fiber.App) func(context.Context) error {
+	return func(_ context.Context) error {
 		return server.Shutdown()
 	}
 }

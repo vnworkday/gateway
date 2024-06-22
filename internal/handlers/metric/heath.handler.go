@@ -1,22 +1,21 @@
 package metrichandler
 
 import (
+	"errors"
+
 	"github.com/gofiber/fiber/v2"
 )
 
-type HealthHandler interface {
-	Check(ctx *fiber.Ctx) error
+type HealthHandler struct {
+	// Add any dependencies here
 }
 
-type healthHandler struct {
+func NewHealthHandler() *HealthHandler {
+	return &HealthHandler{}
 }
 
-func NewHealthHandler() HealthHandler {
-	return healthHandler{}
-}
-
-func (h healthHandler) Check(ctx *fiber.Ctx) error {
-	return ctx.JSON(fiber.Map{
+func (h *HealthHandler) Check(ctx *fiber.Ctx) error {
+	return errors.Join(ctx.JSON(fiber.Map{
 		"status": "ok",
-	})
+	}))
 }
