@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "make test",
-    "check": "make check",
+    "lint": "make lint",
     "prepare": "husky"
   },
   "keywords": [

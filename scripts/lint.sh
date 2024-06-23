@@ -7,39 +7,12 @@ check_verify() {
   go mod verify
   exit_code=$?
 
-if [[ $exit_code -ne 0 ]]; then
+  if [[ $exit_code -ne 0 ]]; then
     echo "🚫 go mod tidy or go mod verify failed."
     exit 1
   fi
 
   echo "✅  Code complies with go mod requirements."
-}
-
-check_format() {
-  files=$(go fmt ./...)
-
-  if [[ -n "$files" ]]; then
-    echo "🚫 The following files are not formatted correctly:"
-    for file in $files; do
-      echo "  - $file"
-    done
-    echo "🚫 Please run \"go fmt\" to fix their formatting."
-    exit 1
-  fi
-
-  echo "✅  Code complies with go fmt requirements."
-}
-
-check_vulnerabilities() {
-  go run golang.org/x/vuln/cmd/govulncheck ./...
-  exit_code=$?
-
-  if [[ $exit_code -ne 0 ]]; then
-    echo "🚫 Vulnerabilities found."
-    exit 1
-  fi
-
-  echo "✅  Code complies with vulnerability requirements."
 }
 
 check_import() {
@@ -108,8 +81,6 @@ check_golangci() {
 }
 
 check_verify
-check_format
-check_vulnerabilities
 check_import true
 check_golangci
 

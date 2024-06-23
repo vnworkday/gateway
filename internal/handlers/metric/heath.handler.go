@@ -14,7 +14,7 @@ func NewHealthHandler() *HealthHandler {
 	return &HealthHandler{}
 }
 
-func (h *HealthHandler) Check(ctx *fiber.Ctx) error {
+func (h *HealthHandler) Readiness(ctx *fiber.Ctx) error {
 	return errors.Join(ctx.JSON(fiber.Map{
 		"status": "ok",
 	}))

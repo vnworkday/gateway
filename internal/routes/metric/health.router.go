@@ -6,6 +6,10 @@ import (
 	"go.uber.org/fx"
 )
 
+type HealthRouter struct {
+	handler *metrichandler.HealthHandler
+}
+
 type HealthRouterParams struct {
 	fx.In
 	Handler *metrichandler.HealthHandler `name:"health"`
@@ -17,12 +21,8 @@ func NewHealthRouter(params HealthRouterParams) *HealthRouter {
 	}
 }
 
-type HealthRouter struct {
-	handler *metrichandler.HealthHandler
-}
-
 func (h *HealthRouter) Register(router fiber.Router) {
-	router.Add(fiber.MethodGet, "", h.handler.Check)
+	router.Add(fiber.MethodGet, "", h.handler.Readiness)
 }
 
 func (h *HealthRouter) Path() string {

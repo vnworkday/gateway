@@ -41,6 +41,10 @@ The project follows the standard Go project layout. The structure of the project
 - [x] (For Windows users) Install [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install)
 - [x] (For Windows users) Install [Chocolatey](https://chocolatey.org/install) and
   then run `choco install make` to install `make` command
+- [x] Install [golangci-lint](https://golangci-lint.run/welcome/install/) and
+    - Set up IDE integration (see [instructions](https://golangci-lint.run/welcome/integrations/)). This is optional
+      because it may cause performance issues in some IDEs. You are still can run `make check` to lint your code
+      instead.
 
 ## Prepare the environment
 
@@ -48,5 +52,5 @@ The project follows the standard Go project layout. The structure of the project
 
 ## ⚠️ Pre-commit ⚠️
 
-Make sure you have already run `make pre-commit` before committing your code. This will ensure that your code is
+Make sure you have already run `make lint` before committing your code. This will ensure that your code is
 properly formatted and passes all the tests.
