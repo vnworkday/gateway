@@ -24,6 +24,13 @@ linters-settings:
             desc: Superseded by google.golang.org/protobuf
           - pkg: "github.com/pkg/errors"
             desc: Should be replaced by standard lib errors package
+  ireturn:
+    allow:
+      - anon # allow anonymous returns
+      - error # allow returning error
+      - empty # allow returning `interface{}`
+      - stdlib # allow returning standard library types
+      - go.uber.org\/fx\.Option # allow returning fx.Option
 #  errorlint:
 #    # Check whether fmt.Errorf uses the %w verb for formatting errors. See the readme for caveats
 #    errorf: true
@@ -107,7 +114,7 @@ linters:
     - execinquery # deprecated
     - gomnd # deprecated
     - exhaustruct # too much unnecessary verbosity
-    - gci # we have already had goimports and gofmt
+    - gci # already used goimports
 
 output:
   sort-results: true

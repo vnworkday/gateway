@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"go.uber.org/zap"
 
 	"go.uber.org/fx"
 )
@@ -13,11 +14,12 @@ import (
 type ServerProps struct {
 	fx.In
 	fx.Lifecycle
+	Logger  *zap.Logger
 	Routers []Router `group:"routers"`
 }
 
 func NewServer(props ServerProps) *fiber.App {
-	svr := buildHTTPServer()
+	svr := buildHTTPServer(props.Logger)
 
 	registerRoutes(svr, props.Routers)
 
@@ -29,7 +31,7 @@ func NewServer(props ServerProps) *fiber.App {
 	return svr
 }
 
-func buildHTTPServer() *fiber.App {
+func buildHTTPServer(logger *zap.Logger) *fiber.App {
 	app := fiber.New(fiber.Config{
 		BodyLimit:               fiber.DefaultBodyLimit, // 4 * 1024 * 1024 = 4MB
 		CaseSensitive:           true,
@@ -58,16 +60,22 @@ func buildHTTPServer() *fiber.App {
 		ReduceMemoryUsage: false, // NOTE: We may want to enable this later if we have memory issues.
 
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-			code := fiber.StatusInternalServerError
+			code := CodeErrInternal
 			var e *fiber.Error
 			if errors.As(err, &e) {
-				code = e.Code
+				code = FromFiberError(e)
 			}
+
+			if IsClientError(code) {
+				logger.Info("Client error", zap.Error(err))
+			} else {
+				logger.Error("Server error", zap.Error(err))
+			}
+
 			ctx.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSONCharsetUTF8)
 
-			return ctx.Status(code).JSON(map[string]interface{}{
-				"code":    InternalError,
-				"title":   "Internal Server Error",
+			return ctx.Status(ToHTTPStatus(code)).JSON(map[string]interface{}{
+				"code":    code,
 				"message": "Something went wrong",
 				"details": nil,
 			})

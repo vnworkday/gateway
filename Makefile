@@ -24,9 +24,13 @@ generate:
 test:
 	@"$(CURDIR)/scripts/test.sh"
 
-## check: Run all required static checks
-check:
-	@"$(CURDIR)/scripts/check.sh"
+## lint: Run linters
+lint:
+	@"$(CURDIR)/scripts/lint.sh"
+
+## gen: Generate CRUD code
+gen:
+	@"$(CURDIR)/scripts/gen.sh" -s $(service) -r $(resource)
 
 ## pre-commit: ⚠️ Run all required checks before commit
 pre-commit:
@@ -36,4 +40,4 @@ pre-commit:
 
 .NOTPARALLEL:
 
-.PHONY: help
+.PHONY: help info generate test lint gen pre-commit

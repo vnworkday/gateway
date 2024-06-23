@@ -1,12 +1,12 @@
 module github.com/vnworkday/gateway
 
-go 1.22.3
+go 1.22.4
 
 require (
 	github.com/gofiber/fiber/v2 v2.52.4
 	go.uber.org/fx v1.22.0
 	go.uber.org/zap v1.27.0
-	golang.org/x/telemetry v0.0.0-20240614130327-d92499019833
+	golang.org/x/telemetry v0.0.0-20240621194115-a740542b267c
 	golang.org/x/vuln v1.1.2
 	honnef.co/go/tools v0.4.7
 )
