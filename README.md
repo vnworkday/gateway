@@ -35,7 +35,7 @@ The project follows the standard Go project layout. The structure of the project
 
 ## Prerequisites installation
 
-- [x] Install [Node.js (v.20.13.1+)](https://nodejs.org/en/download/)
+- [x] Install [Node.js (v.20.13.1+)](https://nodejs.org/en/download/) or via `nvm`
 - [x] Install [Go 1.22.3+](https://golang.org/doc/install)
 - [x] Install [Docker Desktop](https://docs.docker.com/get-docker/)
 - [x] (For Windows users) Install [WSL2](https://docs.microsoft.com/en-us/windows/wsl/install)
@@ -45,7 +45,6 @@ The project follows the standard Go project layout. The structure of the project
 ## Prepare the environment
 
 1. Run `npm run install` to install the project dependencies
-2. Run `npm run setup` to set up the project environment for local development
 
 ## ⚠️ Pre-commit ⚠️
 

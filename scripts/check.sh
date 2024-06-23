@@ -5,6 +5,13 @@ set -eufo pipefail
 check_verify() {
   go mod tidy
   go mod verify
+  exit_code=$?
+
+if [[ $exit_code -ne 0 ]]; then
+    echo "🚫 go mod tidy or go mod verify failed."
+    exit 1
+  fi
+
   echo "✅  Code complies with go mod requirements."
 }
 
@@ -21,29 +28,6 @@ check_format() {
   fi
 
   echo "✅  Code complies with go fmt requirements."
-}
-
-check_static() {
-  skip_dirs="vendor|node_modules|public|storage|bootstrap"
-
-  packages=$(go list ./... | grep -v -E "$skip_dirs")
-
-#  echo "🔍 Checking the following packages:"
-#  for package in $packages; do
-#    echo "  - $package"
-#  done
-
-  # Note that we globally disable some checks. The list is controlled by the
-  # top-level staticcheck.conf file in this repo.
-  go run honnef.co/go/tools/cmd/staticcheck "${packages}"
-  exit_code=$?
-
-  if [[ $exit_code -ne 0 ]]; then
-    echo "🚫 Static analysis failed."
-    exit 1
-  fi
-
-  echo "✅  Code complies with static analysis requirements."
 }
 
 check_vulnerabilities() {
@@ -74,7 +58,7 @@ check_import() {
 
   if [[ ${#target_files[@]} -eq 0 ]]; then
     echo "🚫 No Go files changed relative to $base_branch, skipping import check."
-    exit 0
+    return
   fi
 
 #  echo "🔍 Checking the following files:"
@@ -111,11 +95,23 @@ check_import() {
   echo "✅  Code complies with go imports requirements."
 }
 
+check_golangci() {
+  golangci-lint run
+  exit_code=$?
+
+  if [[ $exit_code -ne 0 ]]; then
+    echo "🚫 Linting failed."
+    return
+  fi
+
+  echo "✅  Code complies with linting requirements."
+}
+
 check_verify
 check_format
-#check_static
 check_vulnerabilities
 check_import true
+check_golangci
 
 echo "==============================="
 echo "🎉 All checks passed."
