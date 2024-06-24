@@ -23,6 +23,15 @@ func NewTenantHandler(params TenantHandlerParams) *TenantHandler {
 	}
 }
 
+// GetTenant godoc
+//
+//	@Summary		Get a tenant by ID
+//	@Description	Get a tenant by ID
+//	@Tags			Tenant
+//	@Produce		json
+//	@Param			id	path		string	true	"Tenant ID"
+//	@Success		200	{object}	accountmodel.Tenant
+//	@Router			/tenants/{id} [get]
 func (h *TenantHandler) GetTenant(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
 
@@ -33,6 +42,14 @@ func (h *TenantHandler) GetTenant(ctx *fiber.Ctx) error {
 	}))
 }
 
+// ListTenants godoc
+//
+//	@Summary		List all tenants
+//	@Description	List all tenants
+//	@Tags			Tenant
+//	@Produce		json
+//	@Success		200	{object}	accountmodel.Tenant
+//	@Router			/tenants [get]
 func (h *TenantHandler) ListTenants(ctx *fiber.Ctx) error {
 	h.logger.Info("ListTenants")
 

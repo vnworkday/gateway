@@ -74,7 +74,7 @@ func buildHTTPServer(logger *zap.Logger) *fiber.App {
 
 			ctx.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSONCharsetUTF8)
 
-			return ctx.Status(ToHTTPStatus(code)).JSON(map[string]interface{}{
+			return ctx.Status(ToHTTPStatus(code)).JSON(map[string]any{
 				"code":    code,
 				"message": "Something went wrong",
 				"details": nil,

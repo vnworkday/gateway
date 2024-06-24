@@ -31,6 +31,12 @@ linters-settings:
       - empty # allow returning `interface{}`
       - stdlib # allow returning standard library types
       - go.uber.org\/fx\.Option # allow returning fx.Option
+  gofmt:
+    rewrite-rules:
+      - pattern: 'interface{}'
+        replacement: 'any'
+      - pattern: 'a[b:len(a)]'
+        replacement: 'a[b:]'
 #  errorlint:
 #    # Check whether fmt.Errorf uses the %w verb for formatting errors. See the readme for caveats
 #    errorf: true

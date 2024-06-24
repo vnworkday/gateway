@@ -2,7 +2,7 @@ package utils
 
 import "go.uber.org/fx"
 
-func FxNamedRegister(constructor interface{}, name string, params ...string) any {
+func FxNamedRegister(constructor any, name string, params ...string) any {
 	paramTags := make([]string, 0, len(params))
 
 	for _, p := range params {
@@ -16,7 +16,7 @@ func FxNamedRegister(constructor interface{}, name string, params ...string) any
 	)
 }
 
-func FxGroupedRegister(constructor interface{}, group string, g interface{}) any {
+func FxGroupedRegister(constructor any, group string, g any) any {
 	return fx.Annotate(
 		constructor,
 		fx.As(g),

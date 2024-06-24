@@ -1,4 +1,4 @@
-package metrichandler
+package misc
 
 import (
 	"errors"

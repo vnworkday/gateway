@@ -1,8 +1,8 @@
-package metricrouter
+package miscrouter
 
 import (
 	"github.com/gofiber/fiber/v2"
-	metrichandler "github.com/vnworkday/gateway/internal/handlers/metric"
+	metrichandler "github.com/vnworkday/gateway/internal/handlers/misc"
 	"go.uber.org/fx"
 )
 

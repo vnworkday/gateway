@@ -2,7 +2,7 @@ package handlers
 
 import (
 	tenanthandler "github.com/vnworkday/gateway/internal/handlers/account"
-	metrichandler "github.com/vnworkday/gateway/internal/handlers/metric"
+	mischandler "github.com/vnworkday/gateway/internal/handlers/misc"
 	"github.com/vnworkday/gateway/internal/utils"
 	"go.uber.org/fx"
 )
@@ -10,7 +10,7 @@ import (
 func Register() fx.Option {
 	return fx.Provide(
 		// Metric handlers
-		utils.FxNamedRegister(metrichandler.NewHealthHandler, "health"),
+		utils.FxNamedRegister(mischandler.NewHealthHandler, "health"),
 
 		// Account handlers
 		utils.FxNamedRegister(tenanthandler.NewTenantHandler, "tenant"),
