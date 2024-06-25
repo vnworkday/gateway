@@ -1,4 +1,4 @@
-package accountrouter
+package account
 
 import (
 	"github.com/gofiber/fiber/v2"
@@ -25,7 +25,7 @@ func (r *TenantRouter) Register(router fiber.Router) {
 	router.Add(fiber.MethodGet, "", r.handler.ListTenants)
 	router.Add(fiber.MethodGet, "/:id", r.handler.GetTenant)
 	router.Add(fiber.MethodPost, "", r.handler.CreateTenant)
-	router.Add(fiber.MethodPut, `/:id<minLen(1)\>`, r.handler.UpdateTenant)
+	router.Add(fiber.MethodPut, "/:id", r.handler.UpdateTenant)
 }
 
 func (r *TenantRouter) Path() string {

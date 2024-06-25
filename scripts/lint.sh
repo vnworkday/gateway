@@ -69,7 +69,7 @@ check_import() {
 }
 
 check_golangci() {
-  golangci-lint run
+  golangci-lint run --fix
   exit_code=$?
 
   if [[ $exit_code -ne 0 ]]; then

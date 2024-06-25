@@ -1,4 +1,4 @@
-package accounthandler
+package account
 
 import (
 	"errors"
@@ -23,6 +23,23 @@ func NewTenantHandler(params TenantHandlerParams) *TenantHandler {
 	}
 }
 
+// GetTenant godoc
+//
+//	@Id				GetTenant
+//	@Summary		Get a tenant
+//	@Description	Get a tenant by ID
+//	@Tags			Tenant
+//	@Produce		json
+//	@Param			id	path		string	true	"Tenant ID"
+//	@Success		200	{object}	account.Tenant
+//	@Failure		404	{object}	shared.Error	"when the tenant is not found"
+//	@Failure		500	{object}	shared.Error	"when the server is unable to handle the request"
+//	@Failure		400	{object}	shared.Error	"when the provided id is invalid"
+//	@Failure		401	{object}	shared.Error	"when the user is not authenticated"
+//	@Failure		403	{object}	shared.Error	"when the user is not authorized"
+//	@Router			/tenants/{id} [get]
+//	@Security		JWT
+//	@Security		ApiKey
 func (h *TenantHandler) GetTenant(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
 
@@ -33,6 +50,19 @@ func (h *TenantHandler) GetTenant(ctx *fiber.Ctx) error {
 	}))
 }
 
+// ListTenants godoc
+//
+//	@Id				ListTenants
+//	@Summary		List all tenants
+//	@Description	List all tenants
+//	@Tags			Tenant
+//	@Produce		json
+//	@Success		200	{object}	account.ListTenantsResponse
+//	@Failure		500	{object}	shared.Error	"when the server is unable to handle the request"
+//	@Failure		401	{object}	shared.Error	"when the user is not authenticated"
+//	@Failure		403	{object}	shared.Error	"when the user is not authorized"
+//	@Router			/tenants [get]
+//	@Security		JWT
 func (h *TenantHandler) ListTenants(ctx *fiber.Ctx) error {
 	h.logger.Info("ListTenants")
 
@@ -41,6 +71,21 @@ func (h *TenantHandler) ListTenants(ctx *fiber.Ctx) error {
 	}))
 }
 
+// CreateTenant godoc
+//
+//	@Id				CreateTenant
+//	@Summary		Create a tenant
+//	@Description	Create a tenant
+//	@Tags			Tenant
+//	@Accept			json
+//	@Produce		json
+//	@Param			tenant	body		account.Tenant	true	"Tenant object that needs to be created"
+//	@Success		200		{object}	account.Tenant
+//	@Failure		500		{object}	shared.Error	"when the server is unable to handle the request"
+//	@Failure		401		{object}	shared.Error	"when the user is not authenticated"
+//	@Failure		403		{object}	shared.Error	"when the user is not authorized"
+//	@Router			/tenants [post]
+//	@Security		JWT
 func (h *TenantHandler) CreateTenant(ctx *fiber.Ctx) error {
 	h.logger.Info("CreateTenant")
 
@@ -49,6 +94,22 @@ func (h *TenantHandler) CreateTenant(ctx *fiber.Ctx) error {
 	}))
 }
 
+// UpdateTenant godoc
+//
+//	@Id				UpdateTenant
+//	@Summary		Update a tenant
+//	@Description	Update an existing tenant by ID
+//	@Tags			Tenant
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path		string			true	"Tenant ID"
+//	@Param			tenant	body		account.Tenant	true	"Tenant object that needs to be updated"
+//	@Success		200		{object}	account.Tenant
+//	@Failure		500		{object}	shared.Error	"when the server is unable to handle the request"
+//	@Failure		401		{object}	shared.Error	"when the user is not authenticated"
+//	@Failure		403		{object}	shared.Error	"when the user is not authorized"
+//	@Router			/tenants/{id} [put]
+//	@Security		JWT
 func (h *TenantHandler) UpdateTenant(ctx *fiber.Ctx) error {
 	id := ctx.Params("id")
 

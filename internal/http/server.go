@@ -5,6 +5,10 @@ import (
 	"errors"
 	"time"
 
+	"github.com/vnworkday/gateway/internal/routes"
+
+	"github.com/vnworkday/gateway/internal/models/shared"
+
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/zap"
 
@@ -15,7 +19,7 @@ type ServerProps struct {
 	fx.In
 	fx.Lifecycle
 	Logger  *zap.Logger
-	Routers []Router `group:"routers"`
+	Routers []routes.Router `group:"routers"`
 }
 
 func NewServer(props ServerProps) *fiber.App {
@@ -60,13 +64,13 @@ func buildHTTPServer(logger *zap.Logger) *fiber.App {
 		ReduceMemoryUsage: false, // NOTE: We may want to enable this later if we have memory issues.
 
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-			code := CodeErrInternal
+			code := shared.CodeErrInternal
 			var e *fiber.Error
 			if errors.As(err, &e) {
-				code = FromFiberError(e)
+				code = shared.FromFiberError(e)
 			}
 
-			if IsClientError(code) {
+			if shared.IsClientError(code) {
 				logger.Info("Client error", zap.Error(err))
 			} else {
 				logger.Error("Server error", zap.Error(err))
@@ -74,11 +78,7 @@ func buildHTTPServer(logger *zap.Logger) *fiber.App {
 
 			ctx.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSONCharsetUTF8)
 
-			return ctx.Status(ToHTTPStatus(code)).JSON(map[string]interface{}{
-				"code":    code,
-				"message": "Something went wrong",
-				"details": nil,
-			})
+			return ctx.Status(shared.ToHTTPStatus(code)).JSON(shared.NewError(code))
 		},
 
 		EnablePrintRoutes: true,
@@ -87,9 +87,10 @@ func buildHTTPServer(logger *zap.Logger) *fiber.App {
 	return app
 }
 
-func registerRoutes(rootRouter fiber.Router, routers []Router) {
+func registerRoutes(rootRouter fiber.Router, routers []routes.Router) {
 	for _, router := range routers {
-		rootRouter.Route(router.Path(), router.Register)
+		path := "/api/v1" + router.Path()
+		rootRouter.Route(path, router.Register)
 	}
 }
 

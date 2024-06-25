@@ -1,0 +1,279 @@
+basePath: /api/v1
+definitions:
+  account.ListTenantsResponse:
+    description: represents a list of tenants with pagination information in the response.
+    properties:
+      items:
+        description: Items is a list of tenants
+        items:
+          $ref: '#/definitions/account.Tenant'
+        type: array
+      nextToken:
+        description: |-
+          NextToken is a token that can be used to retrieve the next page of results.
+          If this field is not present, it means that there are no more results to retrieve.
+        example: Vk4gV29ya2RheSBFeGFtcGxl
+        format: base64
+        type: string
+      previousToken:
+        description: |-
+          PreviousToken a token that can be used to retrieve the previous page of results.
+          If this field is not present, it means that there are no more results to retrieve.
+        example: Vk4gV29ya2RheSBFeGFtcGxl
+        format: base64
+        type: string
+      total:
+        description: Total is the total number of items in the list.
+        example: 100
+        minimum: 0
+        type: integer
+      totalPages:
+        description: TotalPages is the total number of pages in the list.
+        example: 10
+        minimum: 0
+        type: integer
+    required:
+    - items
+    - total
+    - totalPages
+    type: object
+  account.Tenant:
+    description: represents a tenant.
+    properties:
+      id:
+        description: ID of the tenant
+        example: abcxyz
+        type: string
+      name:
+        description: Name of the tenant
+        example: Tenant Name
+        type: string
+    required:
+    - id
+    - name
+    type: object
+  shared.Code:
+    enum:
+    - 1000
+    - 1001
+    - 1002
+    - 1003
+    - 2000
+    - 2001
+    - 2002
+    - 2003
+    - 2004
+    type: integer
+    x-enum-comments:
+      CodeErrNotFound: retryable
+      CodeErrTimeout: retryable
+      CodeErrTooManyRequests: retryable
+      CodeErrUnavailable: retryable
+    x-enum-varnames:
+    - CodeErrInternal
+    - CodeErrTimeout
+    - CodeErrTooManyRequests
+    - CodeErrUnavailable
+    - CodeErrValidation
+    - CodeErrNotFound
+    - CodeErrUnauthorized
+    - CodeErrForbidden
+    - CodeErrTooLarge
+  shared.Error:
+    description: Represents a client-facing API error.
+    properties:
+      code:
+        allOf:
+        - $ref: '#/definitions/shared.Code'
+        description: Code should be unique and identifiable. It is used to determine
+          the type of error.
+        example: 1000
+      message:
+        description: Message is a human-readable description of the error. Should
+          not be used to display to the user.
+        example: An unexpected error occurred. Please try again later.
+        type: string
+      title:
+        description: Title is a short, human-readable title of the error. It is used
+          to determine the type of error.
+        example: Internal Server Error
+        type: string
+    required:
+    - code
+    type: object
+host: http://localhost:3000
+info:
+  contact:
+    email: ntduy.cs@gmail.com
+    name: Duy Nguyen
+    url: https://github.com/vnworkday/gateway
+  description: This is the API documentation for VN Workday Gateway API.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: VN Workday Gateway API
+  version: 0.1.0
+paths:
+  /tenants:
+    get:
+      description: List all tenants
+      operationId: ListTenants
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/account.ListTenantsResponse'
+        "401":
+          description: when the user is not authenticated
+          schema:
+            $ref: '#/definitions/shared.Error'
+        "403":
+          description: when the user is not authorized
+          schema:
+            $ref: '#/definitions/shared.Error'
+        "500":
+          description: when the server is unable to handle the request
+          schema:
+            $ref: '#/definitions/shared.Error'
+      security:
+      - JWT: []
+      summary: List all tenants
+      tags:
+      - Tenant
+    post:
+      consumes:
+      - application/json
+      description: Create a tenant
+      operationId: CreateTenant
+      parameters:
+      - description: Tenant object that needs to be created
+        in: body
+        name: tenant
+        required: true
+        schema:
+          $ref: '#/definitions/account.Tenant'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/account.Tenant'
+        "401":
+          description: when the user is not authenticated
+          schema:
+            $ref: '#/definitions/shared.Error'
+        "403":
+          description: when the user is not authorized
+          schema:
+            $ref: '#/definitions/shared.Error'
+        "500":
+          description: when the server is unable to handle the request
+          schema:
+            $ref: '#/definitions/shared.Error'
+      security:
+      - JWT: []
+      summary: Create a tenant
+      tags:
+      - Tenant
+  /tenants/{id}:
+    get:
+      description: Get a tenant by ID
+      operationId: GetTenant
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/account.Tenant'
+        "400":
+          description: when the provided id is invalid
+          schema:
+            $ref: '#/definitions/shared.Error'
+        "401":
+          description: when the user is not authenticated
+          schema:
+            $ref: '#/definitions/shared.Error'
+        "403":
+          description: when the user is not authorized
+          schema:
+            $ref: '#/definitions/shared.Error'
+        "404":
+          description: when the tenant is not found
+          schema:
+            $ref: '#/definitions/shared.Error'
+        "500":
+          description: when the server is unable to handle the request
+          schema:
+            $ref: '#/definitions/shared.Error'
+      security:
+      - JWT: []
+      - ApiKey: []
+      summary: Get a tenant
+      tags:
+      - Tenant
+    put:
+      consumes:
+      - application/json
+      description: Update an existing tenant by ID
+      operationId: UpdateTenant
+      parameters:
+      - description: Tenant ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Tenant object that needs to be updated
+        in: body
+        name: tenant
+        required: true
+        schema:
+          $ref: '#/definitions/account.Tenant'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/account.Tenant'
+        "401":
+          description: when the user is not authenticated
+          schema:
+            $ref: '#/definitions/shared.Error'
+        "403":
+          description: when the user is not authorized
+          schema:
+            $ref: '#/definitions/shared.Error'
+        "500":
+          description: when the server is unable to handle the request
+          schema:
+            $ref: '#/definitions/shared.Error'
+      security:
+      - JWT: []
+      summary: Update a tenant
+      tags:
+      - Tenant
+schemes:
+- http
+- https
+securityDefinitions:
+  ApiKey:
+    description: Please provide a valid API key in the header.
+    in: header
+    name: x-api-key
+    type: apiKey
+  JWT:
+    description: Please provide a valid JWT token in the header.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

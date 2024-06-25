@@ -1,0 +1,20 @@
+extends:
+  - recommended
+
+apis:
+  default:
+    root: ./swagger.yaml
+
+theme:
+  openapi:
+    schemasExpansionLevel: 2
+    pagination: section
+    requiredPropsFirst: true
+    sortOperationsAlphabetically: true
+    sortPropsAlphabetically: true
+    sortTagsAlphabetically: true
+    generateCodeSamples:
+      languages:
+        - lang: curl
+        - lang: Go
+        - lang: Java

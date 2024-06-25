@@ -32,6 +32,10 @@ lint:
 gen:
 	@"$(CURDIR)/scripts/gen.sh" -s $(service) -r $(resource)
 
+## doc: Generate OpenAPI API documentation
+doc:
+	@"$(CURDIR)/scripts/doc.sh"
+
 ## pre-commit: ⚠️ Run all required checks before commit
 pre-commit:
 	@make check
@@ -40,4 +44,4 @@ pre-commit:
 
 .NOTPARALLEL:
 
-.PHONY: help info generate test lint gen pre-commit
+.PHONY: help info generate test lint gen pre-commit doc
