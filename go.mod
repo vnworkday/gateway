@@ -8,7 +8,7 @@ require (
 	github.com/swaggo/swag v1.16.3
 	go.uber.org/fx v1.22.0
 	go.uber.org/zap v1.27.0
-	golang.org/x/telemetry v0.0.0-20240621194115-a740542b267c
+	golang.org/x/telemetry v0.0.0-20240624214326-210d439e9106
 	golang.org/x/vuln v1.1.2
 	honnef.co/go/tools v0.4.7
 )

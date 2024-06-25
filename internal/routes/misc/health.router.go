@@ -1,28 +1,23 @@
-package miscrouter
+package misc
 
 import (
+	"errors"
+
 	"github.com/gofiber/fiber/v2"
-	metrichandler "github.com/vnworkday/gateway/internal/handlers/misc"
-	"go.uber.org/fx"
 )
 
-type HealthRouter struct {
-	handler *metrichandler.HealthHandler
-}
+type HealthRouter struct{}
 
-type HealthRouterParams struct {
-	fx.In
-	Handler *metrichandler.HealthHandler `name:"health"`
-}
-
-func NewHealthRouter(params HealthRouterParams) *HealthRouter {
-	return &HealthRouter{
-		handler: params.Handler,
-	}
+func NewHealthRouter() *HealthRouter {
+	return &HealthRouter{}
 }
 
 func (h *HealthRouter) Register(router fiber.Router) {
-	router.Add(fiber.MethodGet, "", h.handler.Readiness)
+	router.Add(fiber.MethodGet, "", func(ctx *fiber.Ctx) error {
+		return errors.Join(ctx.JSON(fiber.Map{
+			"status": "ok",
+		}))
+	})
 }
 
 func (h *HealthRouter) Path() string {

@@ -1,4 +1,4 @@
-package miscrouter
+package misc
 
 import (
 	"github.com/gofiber/fiber/v2"

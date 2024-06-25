@@ -1,4 +1,4 @@
-package http
+package shared
 
 import "github.com/gofiber/fiber/v2"
 
@@ -29,6 +29,20 @@ var codeToHTTPStatus = map[Code]int{
 	CodeErrUnauthorized: fiber.StatusUnauthorized,
 	CodeErrForbidden:    fiber.StatusForbidden,
 	CodeErrTooLarge:     fiber.StatusRequestEntityTooLarge,
+}
+
+//nolint:gochecknoglobals
+var CodeToMessage = map[Code]string{
+	CodeErrInternal:        "Internal server error",
+	CodeErrTimeout:         "Request timeout",
+	CodeErrTooManyRequests: "Too many requests",
+	CodeErrUnavailable:     "Service unavailable",
+
+	CodeErrValidation:   "Validation error",
+	CodeErrNotFound:     "Not found",
+	CodeErrUnauthorized: "Unauthorized",
+	CodeErrForbidden:    "Forbidden",
+	CodeErrTooLarge:     "Request too large",
 }
 
 //nolint:gochecknoglobals

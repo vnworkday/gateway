@@ -1,42 +1,4 @@
 services:
-  pre-commit:
-    container_name: pre-commit
-    build:
-      context: ..
-      dockerfile: ci/Dockerfile
-    pull_policy: missing
-    labels:
-      com.vnworkday.docker.name: pre-commit
-      com.vnworkday.docker.project: vnworkday
-    restart: always
-    entrypoint: /bin/sh
-    stdin_open: true
-    stop_signal: SIGKILL
-    healthcheck:
-      test: [ "CMD", "pre-commit", "--version" ]
-      interval: 10s
-      timeout: 5s
-      start_period: 10s
-      retries: 3
-#  swag:
-#    container_name: swag
-#    image: ghcr.io/swaggo/swag:latest
-#    pull_policy: missing
-#    labels:
-#      com.vnworkday.docker.name: swag
-#      com.vnworkday.docker.project: vnworkday
-#    volumes:
-#      - .:/code
-#    restart: no
-#    entrypoint: /bin/swag
-#    stop_signal: SIGKILL
-#    healthcheck:
-#      test: [ "CMD", "swag", "--version" ]
-#      interval: 10s
-#      timeout: 5s
-#      start_period: 10s
-#      retries: 3
-#    platform: linux/amd64
   wait:
     container_name: wait
     image: dokku/wait:latest
@@ -46,7 +8,5 @@ services:
       com.vnworkday.docker.project: vnworkday
     restart: no
     depends_on:
-      pre-commit:
-        condition: service_healthy
       swag:
         condition: service_healthy

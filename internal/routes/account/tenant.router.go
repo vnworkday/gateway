@@ -1,4 +1,4 @@
-package accountrouter
+package account
 
 import (
 	"github.com/gofiber/fiber/v2"
