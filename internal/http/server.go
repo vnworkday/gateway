@@ -5,6 +5,8 @@ import (
 	"errors"
 	"time"
 
+	"github.com/spf13/viper"
+
 	"github.com/vnworkday/gateway/internal/routes"
 
 	"github.com/vnworkday/gateway/internal/models/shared"
@@ -19,6 +21,7 @@ type ServerProps struct {
 	fx.In
 	fx.Lifecycle
 	Logger  *zap.Logger
+	Config  *viper.Viper    `name:"config"`
 	Routers []routes.Router `group:"routers"`
 }
 

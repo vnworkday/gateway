@@ -46,3 +46,4 @@ fabric.properties
 go.work
 *.cov
 node_modules/
+.env
