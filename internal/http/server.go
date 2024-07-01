@@ -2,8 +2,11 @@ package http
 
 import (
 	"context"
-	"errors"
 	"time"
+
+	"github.com/pkg/errors"
+
+	"github.com/spf13/viper"
 
 	"github.com/vnworkday/gateway/internal/routes"
 
@@ -19,6 +22,7 @@ type ServerProps struct {
 	fx.In
 	fx.Lifecycle
 	Logger  *zap.Logger
+	Config  *viper.Viper    `name:"config"`
 	Routers []routes.Router `group:"routers"`
 }
 

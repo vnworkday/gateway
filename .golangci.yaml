@@ -10,12 +10,10 @@ linters-settings:
           - $all
           - "!$test"
         deny:
-          - pkg: reflect
-            desc: Please don't use reflect package
           - pkg: "github.com/golang/protobuf"
             desc: Superseded by google.golang.org/protobuf
-          - pkg: "github.com/pkg/errors"
-            desc: Should be replaced by standard lib errors package
+          - pkg: "errors"
+            desc: Should be replaced by github.com/pkg/errors
       Test:
         files:
           - $test
@@ -37,6 +35,24 @@ linters-settings:
         replacement: 'any'
       - pattern: 'a[b:len(a)]'
         replacement: 'a[b:]'
+  exhaustive:
+    default-signifies-exhaustive: true
+  varnamelen:
+    min-name-length: 2
+  wsl:
+    allow-cuddle-declarations: true
+  wrapcheck:
+    ignoreSigs:
+      - .Errorf(
+      - errors.New(
+      - errors.Unwrap(
+      - errors.Join(
+      - .Wrap(
+      - .Wrapf(
+      - .WithMessage(
+      - .WithMessagef(
+      - .WithStack(
+      - .JSON(
 #  errorlint:
 #    # Check whether fmt.Errorf uses the %w verb for formatting errors. See the readme for caveats
 #    errorf: true
@@ -44,8 +60,6 @@ linters-settings:
 #    asserts: true
 #    # Check for plain error comparisons
 #    comparison: true
-#  exhaustive:
-#    default-signifies-exhaustive: true
 #  forbidigo:
 #    # Forbid the following identifiers (identifiers are written using regexp):
 #    forbid:
@@ -121,6 +135,7 @@ linters:
     - gomnd # deprecated
     - exhaustruct # too much unnecessary verbosity
     - gci # already used goimports
+    - testpackage
 
 output:
   sort-results: true
