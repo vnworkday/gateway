@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-
 	"github.com/pkg/errors"
 
 	"github.com/spf13/viper"
