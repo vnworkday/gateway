@@ -1,8 +1,6 @@
 package account
 
 import (
-	"errors"
-
 	"github.com/gofiber/fiber/v2"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
@@ -45,9 +43,9 @@ func (h *TenantHandler) GetTenant(ctx *fiber.Ctx) error {
 
 	h.logger.Info("GetTenant", zap.String("id", id))
 
-	return errors.Join(ctx.JSON(fiber.Map{
+	return ctx.JSON(fiber.Map{
 		"status": "ok",
-	}))
+	})
 }
 
 // ListTenants godoc
@@ -66,9 +64,9 @@ func (h *TenantHandler) GetTenant(ctx *fiber.Ctx) error {
 func (h *TenantHandler) ListTenants(ctx *fiber.Ctx) error {
 	h.logger.Info("ListTenants")
 
-	return errors.Join(ctx.JSON(fiber.Map{
+	return ctx.JSON(fiber.Map{
 		"status": "ok",
-	}))
+	})
 }
 
 // CreateTenant godoc
@@ -89,9 +87,9 @@ func (h *TenantHandler) ListTenants(ctx *fiber.Ctx) error {
 func (h *TenantHandler) CreateTenant(ctx *fiber.Ctx) error {
 	h.logger.Info("CreateTenant")
 
-	return errors.Join(ctx.JSON(fiber.Map{
+	return ctx.JSON(fiber.Map{
 		"status": "ok",
-	}))
+	})
 }
 
 // UpdateTenant godoc
@@ -115,7 +113,7 @@ func (h *TenantHandler) UpdateTenant(ctx *fiber.Ctx) error {
 
 	h.logger.Info("UpdateTenant", zap.String("id", id))
 
-	return errors.Join(ctx.JSON(fiber.Map{
+	return ctx.JSON(fiber.Map{
 		"status": "ok",
-	}))
+	})
 }

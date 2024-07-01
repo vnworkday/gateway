@@ -5,6 +5,7 @@ go 1.22.4
 require (
 	github.com/gofiber/fiber/v2 v2.52.4
 	github.com/gofiber/swagger v1.0.0
+	github.com/pkg/errors v0.9.1
 	github.com/spf13/viper v1.19.0
 	github.com/swaggo/swag v1.16.3
 	go.uber.org/fx v1.22.1
