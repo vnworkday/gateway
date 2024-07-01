@@ -2,8 +2,8 @@ package http
 
 import (
 	"context"
-	"time"
 	"github.com/pkg/errors"
+	"time"
 
 	"github.com/spf13/viper"
 
