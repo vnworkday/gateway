@@ -26,8 +26,7 @@ func NewConfig(params CfgParams) *Cfg {
 		cfgBuilder.FromFile(".env")
 	}
 
-	err := cfgBuilder.MapTo(cfg)
-	if err != nil {
+	if err := cfgBuilder.MapTo(cfg); err != nil {
 		params.Logger.Panic("Failed to read config", zap.Error(err))
 	}
 
