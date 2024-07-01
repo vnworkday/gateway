@@ -29,6 +29,7 @@ linters-settings:
       - empty # allow returning `interface{}`
       - stdlib # allow returning standard library types
       - go.uber.org\/fx\.Option # allow returning fx.Option
+      - google.golang.org\/grpc\/credentials\.TransportCredentials
   gofmt:
     rewrite-rules:
       - pattern: 'interface{}'

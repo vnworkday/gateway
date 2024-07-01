@@ -3,6 +3,8 @@ package app
 import (
 	"os"
 
+	"github.com/vnworkday/gateway/internal/grpc"
+
 	"github.com/vnworkday/gateway/internal/config"
 	"github.com/vnworkday/gateway/internal/handlers"
 	"github.com/vnworkday/gateway/internal/http"
@@ -37,6 +39,12 @@ func Start() {
 				return logger.Named("routers")
 			}),
 			routes.Register(),
+		),
+		fx.Module("grpc",
+			fx.Decorate(func(logger *zap.Logger) *zap.Logger {
+				return logger.Named("grpc")
+			}),
+			grpc.Register(),
 		),
 		fx.Invoke(http.NewServer),
 	).Run()

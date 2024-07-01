@@ -15,6 +15,12 @@ type CfgParams struct {
 
 type Cfg struct {
 	AppName string `config:"app_name"`
+
+	GRPCMaxMessageSizeMB int `config:"grpc_max_message_size_mb"`
+	GRPCKeepaliveTime    int `config:"grpc_keepalive_time"`
+	GRPCKeepaliveTimeout int `config:"grpc_keepalive_timeout"`
+
+	GRPCAccountServiceURI string `config:"grpc_account_service_uri"`
 }
 
 func NewConfig(params CfgParams) *Cfg {
