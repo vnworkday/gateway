@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"time"
 
 	"github.com/vnworkday/config"
 	"go.uber.org/fx"
@@ -16,9 +17,10 @@ type CfgParams struct {
 type Cfg struct {
 	AppName string `config:"app_name"`
 
-	GRPCMaxMessageSizeMB int `config:"grpc_max_message_size_mb"`
-	GRPCKeepaliveTime    int `config:"grpc_keepalive_time"`
-	GRPCKeepaliveTimeout int `config:"grpc_keepalive_timeout"`
+	GRPCMaxMessageSizeMB int           `config:"grpc_max_message_size_mb"`
+	GRPCKeepaliveTime    int           `config:"grpc_keepalive_time"`
+	GRPCKeepaliveTimeout int           `config:"grpc_keepalive_timeout"`
+	GRPCCallTimeout      time.Duration `config:"grpc_call_timeout"`
 
 	GRPCAccountServiceURI string `config:"grpc_account_service_uri"`
 }

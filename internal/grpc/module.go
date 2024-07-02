@@ -8,5 +8,6 @@ import (
 func Register() fx.Option {
 	return fx.Provide(
 		utils.FxNamedRegister(NewAccountConnection, "grpc_account_connection"),
+		utils.FxNamedRegister(NewTenantClient, "grpc_tenant_client"),
 	)
 }
