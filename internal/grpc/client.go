@@ -39,9 +39,7 @@ func (c *TenantClient) CreateTenant(
 	opts ...grpc.CallOption,
 ) (*tenantv1.CreateTenantResponse, error) {
 	grpcCtx, cancel := context.WithTimeout(ctx, c.timeout)
-
 	defer cancel()
-
 	grpcCtx = metadata.NewOutgoingContext(grpcCtx, md)
 
 	return c.client.CreateTenant(grpcCtx, in, opts...)
@@ -54,9 +52,7 @@ func (c *TenantClient) GetTenant(
 	opts ...grpc.CallOption,
 ) (*tenantv1.GetTenantResponse, error) {
 	grpcCtx, cancel := context.WithTimeout(ctx, c.timeout)
-
 	defer cancel()
-
 	grpcCtx = metadata.NewOutgoingContext(grpcCtx, md)
 
 	return c.client.GetTenant(grpcCtx, in, opts...)
@@ -69,9 +65,7 @@ func (c *TenantClient) ListTenants(
 	opts ...grpc.CallOption,
 ) (*tenantv1.ListTenantsResponse, error) {
 	grpcCtx, cancel := context.WithTimeout(ctx, c.timeout)
-
 	defer cancel()
-
 	grpcCtx = metadata.NewOutgoingContext(grpcCtx, md)
 
 	return c.client.ListTenants(grpcCtx, in, opts...)
@@ -84,9 +78,7 @@ func (c *TenantClient) UpdateTenant(
 	opts ...grpc.CallOption,
 ) (*tenantv1.UpdateTenantResponse, error) {
 	grpcCtx, cancel := context.WithTimeout(ctx, c.timeout)
-
 	defer cancel()
-
 	grpcCtx = metadata.NewOutgoingContext(grpcCtx, md)
 
 	return c.client.UpdateTenant(grpcCtx, in, opts...)
