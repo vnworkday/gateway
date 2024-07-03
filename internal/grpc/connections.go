@@ -1,6 +1,7 @@
 package grpc
 
 import (
+	"context"
 	"os"
 
 	"github.com/vnworkday/gateway/internal/config"
@@ -13,6 +14,7 @@ import (
 
 type ConnectionParams struct {
 	fx.In
+	fx.Lifecycle
 	Config *config.Cfg `name:"Config"`
 	Logger *zap.Logger
 }
@@ -26,7 +28,7 @@ func newConnection(params ConnectionParams, targetURI string) *grpc.ClientConn {
 
 	cred, err := clientCredentials("", targetURI, os.Getenv("PROFILE"))
 	if err != nil {
-		panic(err)
+		params.Logger.Panic("failed to create client credentials", zap.Error(err))
 	}
 
 	conn, err := grpc.NewClient(targetURI,
@@ -43,8 +45,14 @@ func newConnection(params ConnectionParams, targetURI string) *grpc.ClientConn {
 		grpc.WithKeepaliveParams(clientKeepaliveParams(cfg.GRPCKeepaliveTime, cfg.GRPCKeepaliveTimeout)),
 	)
 	if err != nil {
-		panic(err)
+		params.Logger.Panic("failed to create grpc connection", zap.Error(err))
 	}
+
+	params.Lifecycle.Append(fx.Hook{
+		OnStop: func(_ context.Context) error {
+			return conn.Close()
+		},
+	})
 
 	return conn
 }

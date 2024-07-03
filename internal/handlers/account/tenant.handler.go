@@ -39,9 +39,11 @@ func NewTenantHandler(params TenantHandlerParams) *TenantHandler {
 //	@Security		JWT
 //	@Security		ApiKey
 func (h *TenantHandler) GetTenant(ctx *fiber.Ctx) error {
+	funcN := "GetTenant"
+
 	id := ctx.Params("id")
 
-	h.logger.Info("GetTenant", zap.String("id", id))
+	h.logger.Info("GetTenant", zap.String("id", id), zap.String("func", funcN))
 
 	return ctx.JSON(fiber.Map{
 		"status": "ok",
@@ -62,7 +64,9 @@ func (h *TenantHandler) GetTenant(ctx *fiber.Ctx) error {
 //	@Router			/tenants [get]
 //	@Security		JWT
 func (h *TenantHandler) ListTenants(ctx *fiber.Ctx) error {
-	h.logger.Info("ListTenants")
+	funcN := "ListTenants"
+
+	h.logger.Info("ListTenants", zap.String("func", funcN))
 
 	return ctx.JSON(fiber.Map{
 		"status": "ok",
@@ -85,7 +89,9 @@ func (h *TenantHandler) ListTenants(ctx *fiber.Ctx) error {
 //	@Router			/tenants [post]
 //	@Security		JWT
 func (h *TenantHandler) CreateTenant(ctx *fiber.Ctx) error {
-	h.logger.Info("CreateTenant")
+	funcN := "CreateTenant"
+
+	h.logger.Info("CreateTenant", zap.String("func", funcN))
 
 	return ctx.JSON(fiber.Map{
 		"status": "ok",
@@ -109,9 +115,11 @@ func (h *TenantHandler) CreateTenant(ctx *fiber.Ctx) error {
 //	@Router			/tenants/{id} [put]
 //	@Security		JWT
 func (h *TenantHandler) UpdateTenant(ctx *fiber.Ctx) error {
+	funcN := "UpdateTenant"
+
 	id := ctx.Params("id")
 
-	h.logger.Info("UpdateTenant", zap.String("id", id))
+	h.logger.Info("UpdateTenant", zap.String("id", id), zap.String("func", funcN))
 
 	return ctx.JSON(fiber.Map{
 		"status": "ok",
