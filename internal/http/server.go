@@ -32,7 +32,7 @@ func NewServer(props ServerProps) *fiber.App {
 	registerRoutes(svr, props.Routers)
 
 	props.Lifecycle.Append(fx.Hook{
-		OnStart: onStart(svr),
+		OnStart: onStart(svr, props.Logger),
 		OnStop:  onStop(svr),
 	})
 
@@ -98,11 +98,11 @@ func registerRoutes(rootRouter fiber.Router, routers []routes.Router) {
 	}
 }
 
-func onStart(server *fiber.App) func(context.Context) error {
+func onStart(server *fiber.App, logger *zap.Logger) func(context.Context) error {
 	return func(_ context.Context) error {
 		go func() {
 			if err := server.Listen(":3000"); err != nil {
-				panic(err)
+				logger.Panic("Failed to start server", zap.Error(err))
 			}
 		}()
 

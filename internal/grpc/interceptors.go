@@ -33,7 +33,7 @@ func interceptorLogger(l *zap.Logger) logging.LoggerFunc {
 		case logging.LevelError:
 			logger.Error(msg)
 		default:
-			panic(fmt.Sprintf("unknown level %v", lvl))
+			logger.DPanic(fmt.Sprintf("unknown level %v", lvl))
 		}
 	}
 }
