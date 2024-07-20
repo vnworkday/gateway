@@ -4,7 +4,7 @@ import (
 	"context"
 	"os"
 
-	"github.com/vnworkday/gateway/internal/config"
+	"github.com/vnworkday/gateway/internal/conf"
 	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
@@ -15,7 +15,7 @@ import (
 type ConnectionParams struct {
 	fx.In
 	fx.Lifecycle
-	Config *config.Cfg `name:"Config"`
+	Config *conf.Conf `name:"Config"`
 	Logger *zap.Logger
 }
 

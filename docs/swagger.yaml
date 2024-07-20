@@ -8,14 +8,14 @@ definitions:
         items:
           $ref: '#/definitions/account.Tenant'
         type: array
-      nextToken:
+      next_token:
         description: |-
           NextToken is a token that can be used to retrieve the next page of results.
           If this field is not present, it means that there are no more results to retrieve.
         example: Vk4gV29ya2RheSBFeGFtcGxl
         format: base64
         type: string
-      previousToken:
+      previous_token:
         description: |-
           PreviousToken a token that can be used to retrieve the previous page of results.
           If this field is not present, it means that there are no more results to retrieve.
@@ -27,7 +27,7 @@ definitions:
         example: 100
         minimum: 0
         type: integer
-      totalPages:
+      total_pages:
         description: TotalPages is the total number of pages in the list.
         example: 10
         minimum: 0
@@ -35,7 +35,7 @@ definitions:
     required:
     - items
     - total
-    - totalPages
+    - total_pages
     type: object
   account.Tenant:
     description: represents a tenant.

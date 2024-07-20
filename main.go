@@ -1,10 +1,7 @@
 package main
 
 import (
-	"flag"
-	"os"
-
-	app "github.com/vnworkday/gateway/cmd/gateway"
+	"github.com/vnworkday/gateway/cmd/app"
 	_ "github.com/vnworkday/gateway/docs"
 )
 
@@ -29,15 +26,5 @@ import (
 // @name						x-api-key
 // @description				Please provide a valid API key in the header.
 func main() {
-	var profile string
-
-	flag.StringVar(&profile, "profile", "local", "Profile to run the application")
-	flag.Parse()
-
-	err := os.Setenv("PROFILE", profile)
-	if err != nil {
-		panic(err)
-	}
-
 	app.Start()
 }

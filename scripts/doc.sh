@@ -3,14 +3,14 @@
 set -eufo pipefail
 
 swag_version="v1.16.3"
-redoc_version="1.16.0"
+redoc_version="1.18.0"
 
 init() {
-  docker run --rm -v "$(pwd)":/code ghcr.io/swaggo/swag:${swag_version} init
+  docker run --platform linux/amd64 --rm -v "$(pwd)":/code ghcr.io/swaggo/swag:${swag_version} init
 }
 
 fmt() {
-  docker run --rm -v "$(pwd)":/code ghcr.io/swaggo/swag:${swag_version} fmt
+  docker run --platform linux/amd64 --rm -v "$(pwd)":/code ghcr.io/swaggo/swag:${swag_version} fmt
 }
 
 lint() {

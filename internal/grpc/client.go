@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/vnworkday/gateway/internal/config"
+	"github.com/vnworkday/gateway/internal/conf"
 
 	"buf.build/gen/go/ntduycs/vnworkday/grpc/go/account/tenant/v1/tenantv1grpc"
 	tenantv1 "buf.build/gen/go/ntduycs/vnworkday/protocolbuffers/go/account/tenant/v1"
@@ -16,7 +16,7 @@ import (
 
 type TenantClientParams struct {
 	fx.In
-	Config *config.Cfg
+	Config *conf.Conf
 	Conn   *grpc.ClientConn
 }
 
