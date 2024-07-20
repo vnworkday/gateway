@@ -48,19 +48,20 @@ func LoggingMiddleware(logger *zap.Logger, config *conf.Conf) fiber.Handler {
 				zap.String("path", ctx.Path()),
 				zap.String("method", ctx.Method()),
 				zap.Duration("duration", time.Since(begin)),
-				zap.Error(err),
 			}
 
 			if err != nil {
 				var e *fiber.Error
 				if errors.As(err, &e) {
-					fields = append(fields, zap.Int("status", e.Code))
+					fields = append(fields, zap.Int("status", e.Code), zap.Error(err))
 				} else {
-					fields = append(fields, zap.Int("status", fiber.StatusInternalServerError))
+					fields = append(fields, zap.Int("status", fiber.StatusInternalServerError), zap.Error(err))
 				}
+			} else {
+				fields = append(fields, zap.Int("status", fiber.StatusOK))
 			}
 
-			logger.Info("invoke", fields...)
+			logger.Info("logging middleware", fields...)
 		}(time.Now())
 
 		return ctx.Next()
