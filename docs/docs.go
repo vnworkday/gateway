@@ -262,7 +262,7 @@ const docTemplate = `{
             "required": [
                 "items",
                 "total",
-                "totalPages"
+                "total_pages"
             ],
             "properties": {
                 "items": {
@@ -272,13 +272,13 @@ const docTemplate = `{
                         "$ref": "#/definitions/account.Tenant"
                     }
                 },
-                "nextToken": {
+                "next_token": {
                     "description": "NextToken is a token that can be used to retrieve the next page of results.\nIf this field is not present, it means that there are no more results to retrieve.",
                     "type": "string",
                     "format": "base64",
                     "example": "Vk4gV29ya2RheSBFeGFtcGxl"
                 },
-                "previousToken": {
+                "previous_token": {
                     "description": "PreviousToken a token that can be used to retrieve the previous page of results.\nIf this field is not present, it means that there are no more results to retrieve.",
                     "type": "string",
                     "format": "base64",
@@ -290,7 +290,7 @@ const docTemplate = `{
                     "minimum": 0,
                     "example": 100
                 },
-                "totalPages": {
+                "total_pages": {
                     "description": "TotalPages is the total number of pages in the list.",
                     "type": "integer",
                     "minimum": 0,

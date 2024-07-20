@@ -1,6 +1,6 @@
 package account
 
-import "github.com/vnworkday/gateway/internal/models/shared"
+import "github.com/vnworkday/gateway/internal/model/shared"
 
 // Tenant godoc
 // @Description represents a tenant.

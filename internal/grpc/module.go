@@ -1,13 +1,13 @@
 package grpc
 
 import (
-	"github.com/vnworkday/gateway/internal/utils"
+	"github.com/vnworkday/common/pkg/ioc"
 	"go.uber.org/fx"
 )
 
 func Register() fx.Option {
 	return fx.Provide(
-		utils.FxNamedRegister(NewAccountConnection, "grpc_account_connection"),
-		utils.FxNamedRegister(NewTenantClient, "grpc_tenant_client"),
+		ioc.RegisterWithName(NewAccountConnection, "grpc_account_connection"),
+		ioc.RegisterWithName(NewTenantClient, "grpc_tenant_client"),
 	)
 }

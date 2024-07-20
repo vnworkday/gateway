@@ -1,5 +1,5 @@
 run: # https://golangci-lint.run/usage/configuration/
-  timeout: 5m
+  timeout: 3m
 
 # all available settings of specific linters
 linters-settings:
@@ -20,16 +20,8 @@ linters-settings:
         deny:
           - pkg: "github.com/golang/protobuf"
             desc: Superseded by google.golang.org/protobuf
-          - pkg: "github.com/pkg/errors"
-            desc: Should be replaced by standard lib errors package
-  ireturn:
-    allow:
-      - anon # allow anonymous returns
-      - error # allow returning error
-      - empty # allow returning `interface{}`
-      - stdlib # allow returning standard library types
-      - go.uber.org\/fx\.Option # allow returning fx.Option
-      - google.golang.org\/grpc\/credentials\.TransportCredentials
+          - pkg: "errors"
+            desc: Should be replaced by github.com/pkg/errors
   gofmt:
     rewrite-rules:
       - pattern: 'interface{}'
@@ -43,71 +35,11 @@ linters-settings:
   wsl:
     allow-cuddle-declarations: true
     allow-assign-and-anything: true
-#  errorlint:
-#    # Check whether fmt.Errorf uses the %w verb for formatting errors. See the readme for caveats
-#    errorf: true
-#    # Check for plain type assertions and type switches
-#    asserts: true
-#    # Check for plain error comparisons
-#    comparison: true
-#  forbidigo:
-#    # Forbid the following identifiers (identifiers are written using regexp):
-#    forbid:
-#      - ^print.*$
-#      - 'fmt\.Print.*'
-#    # Exclude godoc examples from forbidigo checks.  Default is true.
-#    exclude-godoc-examples: true
-#  funlen:
-#    lines: 200
-#    statements: 60
-#  goconst:
-#    # minimal length of string constant, 3 by default
-#    min-len: 3
-#    # minimal occurrences count to trigger, 3 by default
-#    min-occurrences: 3
-#  gocritic:
-#    enabled-tags:
-#      - diagnostic
-#      - experimental
-#      - opinionated
-#      - performance
-#      - style
-#    disabled-checks:
-#      - paramTypeCombine
-#      - unnamedResult
-#    settings:
-#      hugeParam:
-#        sizeThreshold: 512
-#
-#  gocyclo:
-#    # minimal code complexity to report, 30 by default (but we recommend 10-20)
-#    min-complexity: 20
-#  goimports:
-#    # put imports beginning with prefix after 3rd-party packages;
-#    # it's a comma-separated list of prefixes
-#    local-prefixes: github.com/vnworkday
-#
-#  gomoddirectives:
-#    # Allow local `replace` directives. Default is false.
-#    replace-local: false
-#  gosimple:
-#    # https://staticcheck.io/docs/options#checks
-#    checks: ["all"]
-#  misspell:
-#    locale: US
-#  nakedret:
-#    max-func-lines: 30
-#  prealloc:
-#    simple: true
-#  revive:
-#    rules:
-#      - name: unused-parameter
-#        disabled: true
-#  unparam:
-#    check-exported: false
-#  unused:
-#    exported-is-used: false
-#    exported-fields-are-used: false
+  tagliatelle:
+    case:
+      rules:
+        json: snake
+        yaml: snake
 
 linters:
   enable-all: true
@@ -118,6 +50,8 @@ linters:
     - gci # already used goimports
     - testpackage
     - wrapcheck # this seems to be a false positive
+    - ireturn # too annoying
+    - nonamedreturns # too annoying
 
 output:
   sort-results: true
