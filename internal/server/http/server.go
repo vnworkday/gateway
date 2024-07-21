@@ -2,7 +2,6 @@ package http
 
 import (
 	"encoding/json"
-	"github.com/vnworkday/gateway/internal/common/model"
 	"regexp"
 	"time"
 
@@ -12,11 +11,13 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/helmet"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 
+	"github.com/vnworkday/gateway/internal/common/model"
 	"github.com/vnworkday/gateway/internal/common/port"
+	"github.com/vnworkday/gateway/internal/conf"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/pkg/errors"
-	"github.com/vnworkday/gateway/internal/conf"
+
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
