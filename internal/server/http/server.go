@@ -2,8 +2,11 @@ package http
 
 import (
 	"encoding/json"
-	"regexp"
 	"time"
+
+	"github.com/gofiber/swagger"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/vnworkday/gateway/internal/common/log"
 
@@ -38,31 +41,19 @@ func NewServer(props ServerProps) *fiber.App {
 
 	server.Use(LoggingMiddleware(props.Logger, props.Config))
 	server.Use(healthcheck.New())
-	server.Use(cors.New(cors.Config{
-		AllowOrigins: "",
-		AllowOriginsFunc: func(origin string) bool {
-			var matched bool
-			if matched, _ = regexp.MatchString(`^https://.*\.vnworkday\.com$`, origin); matched {
-				return true
-			}
-
-			props.Logger.Debug("CORS origin not allowed", zap.String("origin", origin))
-
-			return false
-		},
-	}))
+	server.Use(cors.New())
 	server.Use(compress.New())
 	server.Use(helmet.New())
 	server.Use(recover.New(recover.Config{
 		EnableStackTrace: true,
 		StackTraceHandler: func(ctx *fiber.Ctx, err any) {
-			fields := append(log.CommonHTTPFields(ctx.Path(), ctx.Method()), zap.Any(log.FieldReason, err))
+			fields := append(log.CommonHTTPFields(ctx.Path(), ctx.Method()), zap.Any(log.FieldHTTPError, err))
 
 			if props.Config.Profile != profileLocal {
 				fields = append(fields, zap.Stack(log.FieldStack))
 			}
 
-			props.Logger.Error("panic recovered", fields...)
+			props.Logger.Error("recovered", fields...)
 		},
 	}))
 
@@ -70,6 +61,8 @@ func NewServer(props ServerProps) *fiber.App {
 		path := props.Config.HTTPPathPrefix + router.Path()
 		server.Route(path, router.Register)
 	}
+
+	server.Add(fiber.MethodGet, "/swagger/*", swagger.HandlerDefault)
 
 	return server
 }
@@ -104,13 +97,18 @@ func buildHTTPServer(config *conf.Conf) *fiber.App {
 
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
 			code := model.CodeErrInternal
+			message := err.Error()
 
 			var ferr *fiber.Error
 			if errors.As(err, &ferr) {
 				code = model.FromFiberError(ferr)
+				message = ferr.Message
+			} else if gerr, ok := status.FromError(err); ok && gerr.Code() != codes.Unknown {
+				code = model.FromGRPCError(gerr)
+				message = gerr.Message()
 			}
 
-			body, _ := json.Marshal(model.NewError(code))
+			body, _ := json.Marshal(model.NewError(code, message))
 
 			ctx.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSONCharsetUTF8)
 
@@ -131,17 +129,19 @@ func buildHTTPServer(config *conf.Conf) *fiber.App {
 }
 
 func OnStart(server *fiber.App, logger *zap.Logger) error {
-	logger.Info("Starting server", zap.String("address", ":3000"))
+	logger.Info("server: starting", zap.String(log.FieldProtocol, log.ProtocolHTTP))
 
 	go func() {
 		if err := server.Listen(":3000"); err != nil {
-			logger.Panic("Failed to start server", zap.Error(err))
+			logger.Panic("http: failed to start server", zap.String(log.FieldProtocol, "http"), zap.Error(err))
 		}
 	}()
 
 	return nil
 }
 
-func OnStop(server *fiber.App) error {
+func OnStop(server *fiber.App, logger *zap.Logger) error {
+	logger.Info("server: shutting down", zap.String(log.FieldProtocol, log.ProtocolHTTP))
+
 	return server.Shutdown()
 }

@@ -1,5 +1,10 @@
 package tenant
 
+import (
+	"github.com/vnworkday/gateway/internal/common/model"
+	"github.com/vnworkday/gateway/internal/common/util"
+)
+
 type Tenant struct {
 	ID                      string `json:"id"`
 	Name                    string `json:"name"`
@@ -50,18 +55,33 @@ type GetTenantResponse struct {
 
 type ListTenantsRequest struct {
 	Token string `json:"token" validate:"omitempty,base64"`
-	Limit int    `json:"limit" validate:"gte=1,lte=100"`
+	Limit *int   `json:"limit" validate:"gte=1,lte=100"`
 
 	Name                    string `json:"name"`
 	Domain                  string `json:"domain"`
 	Timezone                string `json:"timezone"                  validate:"timezone"`
-	SubscriptionType        int    `json:"subscription_type"         validate:"gte=1"`
-	SelfRegistrationEnabled bool   `json:"self_registration_enabled"`
-	Status                  int    `json:"status"                    validate:"gte=1"`
+	SubscriptionType        *int   `json:"subscription_type"         validate:"gte=1"`
+	SelfRegistrationEnabled *bool  `json:"self_registration_enabled"`
+	Status                  *int   `json:"status"                    validate:"gte=1"`
 
 	//nolint:lll
 	Sort  string `json:"order" validate:"omitempty,oneof=name domain timezone subscription_type self_registration_enabled status created_at updated_at"`
 	Order string `json:"sort"  validate:"omitempty,oneof=asc desc"`
+}
+
+func DefaultListTenantsRequest() *ListTenantsRequest {
+	return &ListTenantsRequest{
+		Token:                   "",
+		Limit:                   util.ToPointer(model.DefaultLimit),
+		Name:                    "",
+		Domain:                  "",
+		Timezone:                "",
+		SubscriptionType:        nil,
+		SelfRegistrationEnabled: nil,
+		Status:                  nil,
+		Sort:                    model.DefaultSort,
+		Order:                   model.DefaultOrder,
+	}
 }
 
 type ListTenantsResponse struct {

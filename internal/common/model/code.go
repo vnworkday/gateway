@@ -1,6 +1,10 @@
 package model
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+)
 
 type Code uint
 
@@ -18,45 +22,68 @@ const (
 )
 
 //nolint:gochecknoglobals
-var codeToHTTPStatus = map[Code]int{
-	CodeErrInternal:        fiber.StatusInternalServerError,
-	CodeErrTimeout:         fiber.StatusRequestTimeout,
-	CodeErrTooManyRequests: fiber.StatusTooManyRequests,
-	CodeErrUnavailable:     fiber.StatusServiceUnavailable,
+var (
+	codeToHTTPStatus = map[Code]int{
+		CodeErrInternal:        fiber.StatusInternalServerError,
+		CodeErrTimeout:         fiber.StatusRequestTimeout,
+		CodeErrTooManyRequests: fiber.StatusTooManyRequests,
+		CodeErrUnavailable:     fiber.StatusServiceUnavailable,
 
-	CodeErrValidation:   fiber.StatusBadRequest,
-	CodeErrNotFound:     fiber.StatusNotFound,
-	CodeErrUnauthorized: fiber.StatusUnauthorized,
-	CodeErrForbidden:    fiber.StatusForbidden,
-	CodeErrTooLarge:     fiber.StatusRequestEntityTooLarge,
-}
+		CodeErrValidation:   fiber.StatusBadRequest,
+		CodeErrNotFound:     fiber.StatusNotFound,
+		CodeErrUnauthorized: fiber.StatusUnauthorized,
+		CodeErrForbidden:    fiber.StatusForbidden,
+		CodeErrTooLarge:     fiber.StatusRequestEntityTooLarge,
+	}
 
-//nolint:gochecknoglobals
-var CodeToMessage = map[Code]string{
-	CodeErrInternal:        "Internal server error",
-	CodeErrTimeout:         "Request timeout",
-	CodeErrTooManyRequests: "Too many requests",
-	CodeErrUnavailable:     "Service unavailable",
+	codeToMessage = map[Code]string{
+		CodeErrInternal:        "Internal server error",
+		CodeErrTimeout:         "Request timeout",
+		CodeErrTooManyRequests: "Too many requests",
+		CodeErrUnavailable:     "Service unavailable",
 
-	CodeErrValidation:   "Validation error",
-	CodeErrNotFound:     "Not found",
-	CodeErrUnauthorized: "Unauthorized",
-	CodeErrForbidden:    "Forbidden",
-	CodeErrTooLarge:     "Request too large",
-}
+		CodeErrValidation:   "Validation error",
+		CodeErrNotFound:     "Not found",
+		CodeErrUnauthorized: "Unauthorized",
+		CodeErrForbidden:    "Forbidden",
+		CodeErrTooLarge:     "Request too large",
+	}
 
-//nolint:gochecknoglobals
-var httpStatusToCode = map[int]Code{
-	fiber.StatusInternalServerError: CodeErrInternal,
-	fiber.StatusRequestTimeout:      CodeErrTimeout,
-	fiber.StatusTooManyRequests:     CodeErrTooManyRequests,
-	fiber.StatusServiceUnavailable:  CodeErrUnavailable,
+	httpStatusToCode = map[int]Code{
+		fiber.StatusInternalServerError: CodeErrInternal,
+		fiber.StatusRequestTimeout:      CodeErrTimeout,
+		fiber.StatusTooManyRequests:     CodeErrTooManyRequests,
+		fiber.StatusServiceUnavailable:  CodeErrUnavailable,
 
-	fiber.StatusBadRequest:            CodeErrValidation,
-	fiber.StatusNotFound:              CodeErrNotFound,
-	fiber.StatusUnauthorized:          CodeErrUnauthorized,
-	fiber.StatusForbidden:             CodeErrForbidden,
-	fiber.StatusRequestEntityTooLarge: CodeErrTooLarge,
+		fiber.StatusBadRequest:            CodeErrValidation,
+		fiber.StatusNotFound:              CodeErrNotFound,
+		fiber.StatusUnauthorized:          CodeErrUnauthorized,
+		fiber.StatusForbidden:             CodeErrForbidden,
+		fiber.StatusRequestEntityTooLarge: CodeErrTooLarge,
+	}
+
+	protoStatusToCode = map[codes.Code]Code{
+		codes.Canceled:           CodeErrTimeout,
+		codes.InvalidArgument:    CodeErrValidation,
+		codes.DeadlineExceeded:   CodeErrTimeout,
+		codes.NotFound:           CodeErrNotFound,
+		codes.AlreadyExists:      CodeErrValidation,
+		codes.PermissionDenied:   CodeErrForbidden,
+		codes.ResourceExhausted:  CodeErrTooManyRequests,
+		codes.FailedPrecondition: CodeErrValidation,
+		codes.Unimplemented:      CodeErrUnavailable,
+		codes.Internal:           CodeErrInternal,
+		codes.Unavailable:        CodeErrUnavailable,
+		codes.Unauthenticated:    CodeErrUnauthorized,
+	}
+)
+
+func FromGRPCError(status *status.Status) Code {
+	if code, found := protoStatusToCode[status.Code()]; found {
+		return code
+	}
+
+	return CodeErrInternal
 }
 
 func FromFiberError(err *fiber.Error) Code {
@@ -68,8 +95,8 @@ func FromFiberError(err *fiber.Error) Code {
 }
 
 func ToHTTPStatus(code Code) int {
-	if status, found := codeToHTTPStatus[code]; found {
-		return status
+	if httpStatus, found := codeToHTTPStatus[code]; found {
+		return httpStatus
 	}
 
 	return fiber.StatusInternalServerError

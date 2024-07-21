@@ -4,6 +4,10 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/vnworkday/gateway/internal/common/model"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"github.com/vnworkday/gateway/internal/common/log"
 
 	"github.com/gofiber/fiber/v2"
@@ -12,54 +16,43 @@ import (
 	"go.uber.org/zap"
 )
 
-func LoggingMiddleware(logger *zap.Logger, config *conf.Conf) fiber.Handler {
-	skippedByName := map[string][]string{
-		fiber.MethodGet: {
-			"/favicon.ico",
-		},
-	}
-
-	skippedByPattern := map[string][]string{
-		fiber.MethodGet: {
-			config.HTTPPathPrefix + "/swagger",
-		},
+func LoggingMiddleware(logger *zap.Logger, _ *conf.Conf) fiber.Handler {
+	skippedPatterns := []*regexp.Regexp{
+		regexp.MustCompile(`\\+\\.(html|css|js|png|json)`),
 	}
 
 	return func(ctx *fiber.Ctx) (err error) {
-		method := ctx.Method()
-		path := ctx.Path()
+		method, path := ctx.Method(), ctx.Path()
 
-		if skipped, ok := skippedByName[method]; ok {
-			for _, name := range skipped {
-				if path == name {
-					return ctx.Next()
-				}
-			}
-		}
-
-		if skipped, ok := skippedByPattern[method]; ok {
-			for _, pattern := range skipped {
-				if matched, _ := regexp.MatchString(pattern, path); matched {
-					return ctx.Next()
-				}
+		// Check if the request should be skipped based on path pattern
+		for _, pattern := range skippedPatterns {
+			if pattern.MatchString(path) {
+				return ctx.Next()
 			}
 		}
 
 		defer func(begin time.Time) {
-			fields := append(log.CommonHTTPFields(ctx.Path(), ctx.Method()), zap.Duration(log.FieldDuration, time.Since(begin)))
+			fields := log.CommonHTTPFields(path, method)
+			fields = append(fields, zap.Duration(log.FieldHTTPDuration, time.Since(begin)))
 
 			if err != nil {
 				var e *fiber.Error
-				if errors.As(err, &e) {
-					fields = append(fields, zap.Int(log.FieldStatus, e.Code), zap.Error(err))
-				} else {
-					fields = append(fields, zap.Int(log.FieldStatus, fiber.StatusInternalServerError), zap.Error(err))
-				}
-			} else {
-				fields = append(fields, zap.Int(log.FieldStatus, fiber.StatusOK))
-			}
+				var httpStatus int
 
-			logger.Info("logging middleware", fields...)
+				if errors.As(err, &e) {
+					httpStatus = e.Code
+				} else if gerr, ok := status.FromError(err); ok && gerr.Code() != codes.Unknown {
+					httpStatus = model.ToHTTPStatus(model.FromGRPCError(gerr))
+				} else {
+					httpStatus = fiber.StatusInternalServerError
+				}
+
+				fields = append(fields, zap.Int(log.FieldHTTPStatus, httpStatus), zap.Error(err))
+
+				logger.Error("logging middleware", fields...)
+			} else {
+				logger.Info("logging middleware", fields...)
+			}
 		}(time.Now())
 
 		return ctx.Next()

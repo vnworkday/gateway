@@ -20,7 +20,7 @@ func NewError(code Code, message ...string) Error {
 
 	return Error{
 		Code:    code,
-		Title:   CodeToMessage[code],
+		Title:   codeToMessage[code],
 		Message: msg,
 	}
 }

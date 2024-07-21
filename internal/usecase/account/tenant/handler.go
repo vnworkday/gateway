@@ -2,22 +2,26 @@ package tenant
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"github.com/pkg/errors"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
 
 type Handler struct {
-	logger *zap.Logger
+	logger       *zap.Logger
+	tenantClient *GRPCClient
 }
 
 type HandlerParams struct {
 	fx.In
-	Logger *zap.Logger
+	Logger           *zap.Logger
+	TenantGRPCClient *GRPCClient
 }
 
 func NewHandler(params HandlerParams) *Handler {
 	return &Handler{
-		logger: params.Logger.Named("tenant"),
+		logger:       params.Logger.Named("tenant"),
+		tenantClient: params.TenantGRPCClient,
 	}
 }
 
@@ -39,9 +43,23 @@ func NewHandler(params HandlerParams) *Handler {
 //	@Security		JWT
 //	@Security		ApiKey
 func (h *Handler) GetTenant(ctx *fiber.Ctx) error {
-	return ctx.JSON(fiber.Map{
-		"message": "get tenant",
-	})
+	var request *GetTenantRequest
+
+	if err := ctx.ParamsParser(request); err != nil {
+		return errors.Wrap(err, "handler: failed to parse request")
+	}
+
+	response, err := h.tenantClient.GetTenant(
+		ctx.Context(),
+		request,
+		ToGetTenantRequest,
+		ToGetTenantResponse,
+	)
+	if err != nil {
+		return errors.Wrap(err, "handler: failed to get tenant")
+	}
+
+	return ctx.JSON(response)
 }
 
 // ListTenants godoc
@@ -58,9 +76,23 @@ func (h *Handler) GetTenant(ctx *fiber.Ctx) error {
 //	@Router			/tenants [get]
 //	@Security		JWT
 func (h *Handler) ListTenants(ctx *fiber.Ctx) error {
-	return ctx.JSON(fiber.Map{
-		"message": "list tenants",
-	})
+	var request *ListTenantsRequest
+
+	if err := ctx.QueryParser(request); len(ctx.Queries()) > 0 && err != nil {
+		return errors.Wrap(err, "handler: failed to parse request")
+	}
+
+	response, err := h.tenantClient.ListTenants(
+		ctx.Context(),
+		request,
+		ToListTenantsRequest,
+		ToListTenantsResponse,
+	)
+	if err != nil {
+		return errors.Wrap(err, "handler: failed to list tenants")
+	}
+
+	return ctx.JSON(response)
 }
 
 // CreateTenant godoc
@@ -79,9 +111,23 @@ func (h *Handler) ListTenants(ctx *fiber.Ctx) error {
 //	@Router			/tenants [post]
 //	@Security		JWT
 func (h *Handler) CreateTenant(ctx *fiber.Ctx) error {
-	return ctx.JSON(fiber.Map{
-		"message": "create tenant",
-	})
+	var request *CreateTenantRequest
+
+	if err := ctx.BodyParser(request); err != nil {
+		return errors.Wrap(err, "handler: failed to parse request")
+	}
+
+	response, err := h.tenantClient.CreateTenant(
+		ctx.Context(),
+		request,
+		ToCreateTenantRequest,
+		ToCreateTenantResponse,
+	)
+	if err != nil {
+		return errors.Wrap(err, "handler: failed to create tenant")
+	}
+
+	return ctx.JSON(response)
 }
 
 // UpdateTenant godoc
@@ -101,7 +147,21 @@ func (h *Handler) CreateTenant(ctx *fiber.Ctx) error {
 //	@Router			/tenants/{id} [put]
 //	@Security		JWT
 func (h *Handler) UpdateTenant(ctx *fiber.Ctx) error {
-	return ctx.JSON(fiber.Map{
-		"message": "update tenant",
-	})
+	var request *UpdateTenantRequest
+
+	if err := ctx.BodyParser(request); err != nil {
+		return errors.Wrap(err, "handler: failed to parse request")
+	}
+
+	response, err := h.tenantClient.UpdateTenant(
+		ctx.Context(),
+		request,
+		ToUpdateTenantRequest,
+		ToUpdateTenantResponse,
+	)
+	if err != nil {
+		return errors.Wrap(err, "handler: failed to update tenant")
+	}
+
+	return ctx.JSON(response)
 }

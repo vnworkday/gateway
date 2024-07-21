@@ -13,7 +13,7 @@ import (
 )
 
 func Start() {
-	fx.New(
+	app := fx.New(
 		conf.Register(),
 		logger.Register(),
 		usecase.Register(),
@@ -21,5 +21,7 @@ func Start() {
 		server.Register(),
 		fx.WithLogger(log.NewFxEvent),
 		fx.Invoke(func(*fiber.App) {}),
-	).Run()
+	)
+
+	app.Run()
 }

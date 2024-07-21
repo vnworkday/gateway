@@ -1,4 +1,4 @@
-package account
+package tenant
 
 import (
 	"context"
@@ -11,36 +11,35 @@ import (
 	"github.com/vnworkday/gateway/internal/common/port"
 	"github.com/vnworkday/gateway/internal/common/util"
 	"github.com/vnworkday/gateway/internal/conf"
-	"github.com/vnworkday/gateway/internal/usecase/account/tenant"
 	"go.uber.org/fx"
 	"google.golang.org/grpc"
 )
 
-type TenantGRPCClient struct {
+type GRPCClient struct {
 	timeout time.Duration
 	conn    *grpc.ClientConn
 }
 
-type TenantGRPCClientParams struct {
+type GRPCClientParams struct {
 	fx.In
 	Config *conf.Conf
 	Conn   *grpc.ClientConn `name:"grpc_account_connection"`
 }
 
-func NewTenantGRPCClient(params TenantGRPCClientParams) *TenantGRPCClient {
-	return &TenantGRPCClient{
+func NewGRPCClient(params GRPCClientParams) *GRPCClient {
+	return &GRPCClient{
 		timeout: params.Config.GRPCCallTimeout,
 		conn:    params.Conn,
 	}
 }
 
-func (c *TenantGRPCClient) CreateTenant(
+func (c *GRPCClient) CreateTenant(
 	ctx context.Context,
-	in *tenant.CreateTenantRequest,
-	encodeRequest converter.ConvertFunc[tenant.CreateTenantRequest, tenantv1.CreateTenantRequest],
-	decodeResponse converter.ConvertFunc[tenantv1.CreateTenantResponse, *tenant.CreateTenantResponse],
+	in *CreateTenantRequest,
+	encodeRequest converter.ConvertFunc[CreateTenantRequest, tenantv1.CreateTenantRequest],
+	decodeResponse converter.ConvertFunc[tenantv1.CreateTenantResponse, CreateTenantResponse],
 	opts ...grpctransport.ClientOption,
-) (*tenant.CreateTenantResponse, error) {
+) (*CreateTenantResponse, error) {
 	gRPCCtx, cancel := context.WithTimeout(ctx, c.timeout)
 	defer cancel()
 
@@ -53,16 +52,16 @@ func (c *TenantGRPCClient) CreateTenant(
 		opts...,
 	)(gRPCCtx, in)
 
-	return util.SafeCast[*tenant.CreateTenantResponse](resp), err
+	return util.SafeCast[*CreateTenantResponse](resp), err
 }
 
-func (c *TenantGRPCClient) GetTenant(
+func (c *GRPCClient) GetTenant(
 	ctx context.Context,
-	in *tenant.GetTenantRequest,
-	encodeRequest converter.ConvertFunc[tenant.GetTenantRequest, tenantv1.GetTenantRequest],
-	decodeResponse converter.ConvertFunc[tenantv1.GetTenantResponse, *tenant.GetTenantResponse],
+	in *GetTenantRequest,
+	encodeRequest converter.ConvertFunc[GetTenantRequest, tenantv1.GetTenantRequest],
+	decodeResponse converter.ConvertFunc[tenantv1.GetTenantResponse, GetTenantResponse],
 	opts ...grpctransport.ClientOption,
-) (*tenant.GetTenantResponse, error) {
+) (*GetTenantResponse, error) {
 	gRPCCtx, cancel := context.WithTimeout(ctx, c.timeout)
 	defer cancel()
 
@@ -75,16 +74,16 @@ func (c *TenantGRPCClient) GetTenant(
 		opts...,
 	)(gRPCCtx, in)
 
-	return util.SafeCast[*tenant.GetTenantResponse](resp), err
+	return util.SafeCast[*GetTenantResponse](resp), err
 }
 
-func (c *TenantGRPCClient) ListTenants(
+func (c *GRPCClient) ListTenants(
 	ctx context.Context,
-	in *tenant.ListTenantsRequest,
-	encodeRequest converter.ConvertFunc[tenant.ListTenantsRequest, tenantv1.ListTenantsRequest],
-	decodeResponse converter.ConvertFunc[tenantv1.ListTenantsResponse, *tenant.ListTenantsResponse],
+	in *ListTenantsRequest,
+	encodeRequest converter.ConvertFunc[ListTenantsRequest, tenantv1.ListTenantsRequest],
+	decodeResponse converter.ConvertFunc[tenantv1.ListTenantsResponse, ListTenantsResponse],
 	opts ...grpctransport.ClientOption,
-) (*tenant.ListTenantsResponse, error) {
+) (*ListTenantsResponse, error) {
 	gRPCCtx, cancel := context.WithTimeout(ctx, c.timeout)
 	defer cancel()
 
@@ -96,17 +95,20 @@ func (c *TenantGRPCClient) ListTenants(
 		decodeResponse,
 		opts...,
 	)(gRPCCtx, in)
+	if err != nil {
+		return nil, err
+	}
 
-	return util.SafeCast[*tenant.ListTenantsResponse](resp), err
+	return util.SafeCast[*ListTenantsResponse](resp), err
 }
 
-func (c *TenantGRPCClient) UpdateTenant(
+func (c *GRPCClient) UpdateTenant(
 	ctx context.Context,
-	in *tenant.UpdateTenantRequest,
-	encodeRequest converter.ConvertFunc[tenant.UpdateTenantRequest, tenantv1.UpdateTenantRequest],
-	decodeResponse converter.ConvertFunc[tenantv1.UpdateTenantResponse, *tenant.UpdateTenantResponse],
+	in *UpdateTenantRequest,
+	encodeRequest converter.ConvertFunc[UpdateTenantRequest, tenantv1.UpdateTenantRequest],
+	decodeResponse converter.ConvertFunc[tenantv1.UpdateTenantResponse, UpdateTenantResponse],
 	opts ...grpctransport.ClientOption,
-) (*tenant.UpdateTenantResponse, error) {
+) (*UpdateTenantResponse, error) {
 	gRPCCtx, cancel := context.WithTimeout(ctx, c.timeout)
 	defer cancel()
 
@@ -119,5 +121,5 @@ func (c *TenantGRPCClient) UpdateTenant(
 		opts...,
 	)(gRPCCtx, in)
 
-	return util.SafeCast[*tenant.UpdateTenantResponse](resp), err
+	return util.SafeCast[*UpdateTenantResponse](resp), err
 }

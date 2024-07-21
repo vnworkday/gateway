@@ -1,5 +1,11 @@
 package model
 
+const (
+	DefaultLimit = 10
+	DefaultSort  = "created_at"
+	DefaultOrder = "desc"
+)
+
 // RequestPagination godoc
 // @Description Represents a pagination request.
 type RequestPagination struct {
