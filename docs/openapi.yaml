@@ -1,0 +1,328 @@
+openapi: 3.0.0
+info:
+  contact:
+    email: ntduy.cs@gmail.com
+    name: Duy Nguyen
+    url: https://github.com/vnworkday/gateway
+  description: This is the API documentation for VN Workday Gateway API.
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: VN Workday Gateway API
+  version: 0.1.0
+paths:
+  /tenants:
+    get:
+      description: List all tenants
+      operationId: ListTenants
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tenant.ListTenantsResponse"
+        "401":
+          description: when the user is not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/model.Error"
+        "403":
+          description: when the user is not authorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/model.Error"
+        "500":
+          description: when the server is unable to handle the request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/model.Error"
+      security:
+        - JWT: []
+      summary: List all tenants
+      tags:
+        - Tenant
+    post:
+      description: Create a tenant
+      operationId: CreateTenant
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/account.Tenant"
+        description: Tenant object that needs to be created
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tenant.CreateTenantResponse"
+        "401":
+          description: when the user is not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/model.Error"
+        "403":
+          description: when the user is not authorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/model.Error"
+        "500":
+          description: when the server is unable to handle the request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/model.Error"
+      security:
+        - JWT: []
+      summary: Create a tenant
+      tags:
+        - Tenant
+  "/tenants/{id}":
+    get:
+      description: Get a tenant by ID
+      operationId: GetTenant
+      parameters:
+        - description: Tenant ID
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tenant.GetTenantResponse"
+        "400":
+          description: when the provided id is invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/model.Error"
+        "401":
+          description: when the user is not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/model.Error"
+        "403":
+          description: when the user is not authorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/model.Error"
+        "404":
+          description: when the tenant is not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/model.Error"
+        "500":
+          description: when the server is unable to handle the request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/model.Error"
+      security:
+        - JWT: []
+        - ApiKey: []
+      summary: Get a tenant
+      tags:
+        - Tenant
+    put:
+      description: Update an existing tenant by ID
+      operationId: UpdateTenant
+      parameters:
+        - description: Tenant ID
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/account.Tenant"
+        description: Tenant object that needs to be updated
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tenant.UpdateTenantResponse"
+        "401":
+          description: when the user is not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/model.Error"
+        "403":
+          description: when the user is not authorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/model.Error"
+        "500":
+          description: when the server is unable to handle the request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/model.Error"
+      security:
+        - JWT: []
+      summary: Update a tenant
+      tags:
+        - Tenant
+servers:
+  - url: https://stage.vnworkday.com:3000/api/v1
+components:
+  securitySchemes:
+    ApiKey:
+      description: Please provide a valid API key in the header.
+      in: header
+      name: x-api-key
+      type: apiKey
+    JWT:
+      description: Please provide a valid JWT token in the header.
+      in: header
+      name: Authorization
+      type: apiKey
+  schemas:
+    account.Tenant:
+      description: represents a tenant.
+      properties:
+        id:
+          description: ID of the tenant
+          example: abcxyz
+          type: string
+        name:
+          description: Name of the tenant
+          example: Tenant Name
+          type: string
+      required:
+        - id
+        - name
+      type: object
+    model.Code:
+      enum:
+        - 1000
+        - 1001
+        - 1002
+        - 1003
+        - 2000
+        - 2001
+        - 2002
+        - 2003
+        - 2004
+      type: integer
+      x-enum-comments:
+        CodeErrNotFound: retryable
+        CodeErrTimeout: retryable
+        CodeErrTooManyRequests: retryable
+        CodeErrUnavailable: retryable
+      x-enum-varnames:
+        - CodeErrInternal
+        - CodeErrTimeout
+        - CodeErrTooManyRequests
+        - CodeErrUnavailable
+        - CodeErrValidation
+        - CodeErrNotFound
+        - CodeErrUnauthorized
+        - CodeErrForbidden
+        - CodeErrTooLarge
+    model.Error:
+      description: Represents a client-facing API error.
+      properties:
+        code:
+          allOf:
+            - $ref: "#/components/schemas/model.Code"
+          description: Code should be unique and identifiable. It is used to determine the
+            type of error.
+          example: 1000
+        message:
+          description: Message is a human-readable description of the error. Should not be
+            used to display to the user.
+          example: An unexpected error occurred. Please try again later.
+          type: string
+        title:
+          description: Title is a short, human-readable title of the error. It is used to
+            determine the type of error.
+          example: Internal Server Error
+          type: string
+      required:
+        - code
+      type: object
+    tenant.CreateTenantResponse:
+      properties:
+        code:
+          type: integer
+        item:
+          $ref: "#/components/schemas/tenant.Tenant"
+      type: object
+    tenant.GetTenantResponse:
+      properties:
+        code:
+          type: integer
+        item:
+          $ref: "#/components/schemas/tenant.Tenant"
+      type: object
+    tenant.ListTenantsResponse:
+      properties:
+        code:
+          type: integer
+        items:
+          items:
+            $ref: "#/components/schemas/tenant.Tenant"
+          type: array
+        next:
+          type: string
+        previous:
+          type: string
+        total:
+          type: integer
+        total_pages:
+          type: integer
+      type: object
+    tenant.Tenant:
+      properties:
+        created_at:
+          type: string
+        domain:
+          type: string
+        id:
+          type: string
+        name:
+          type: string
+        production_type:
+          type: integer
+        self_registration_enabled:
+          type: boolean
+        status:
+          type: integer
+        subscription_type:
+          type: integer
+        timezone:
+          type: string
+        updated_at:
+          type: string
+      type: object
+    tenant.UpdateTenantResponse:
+      properties:
+        code:
+          type: integer
+        item:
+          $ref: "#/components/schemas/tenant.Tenant"
+      type: object

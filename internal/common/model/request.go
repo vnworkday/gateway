@@ -1,4 +1,4 @@
-package shared
+package model
 
 // RequestPagination godoc
 // @Description Represents a pagination request.

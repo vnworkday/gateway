@@ -2,17 +2,16 @@ package tenant
 
 import (
 	"github.com/gofiber/fiber/v2"
-	accounthandler "github.com/vnworkday/gateway/internal/handlers/account"
 	"go.uber.org/fx"
 )
 
 type Port struct {
-	handler *accounthandler.TenantHandler
+	handler *Handler
 }
 
 type PortParams struct {
 	fx.In
-	Handler *accounthandler.TenantHandler `name:"tenant"`
+	Handler *Handler
 }
 
 func NewPort(params PortParams) *Port {

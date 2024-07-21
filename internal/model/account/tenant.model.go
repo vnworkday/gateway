@@ -1,6 +1,8 @@
 package account
 
-import "github.com/vnworkday/gateway/internal/model/shared"
+import (
+	"github.com/vnworkday/gateway/internal/common/model"
+)
 
 // Tenant godoc
 // @Description represents a tenant.
@@ -14,7 +16,7 @@ type Tenant struct {
 // ListTenantsResponse godoc
 // @Description represents a list of tenants with pagination information in the response.
 type ListTenantsResponse struct {
-	shared.ResponsePagination
+	model.ResponsePagination
 	// Items is a list of tenants
 	Items []Tenant `json:"items" minItems:"0" validate:"required"`
 }

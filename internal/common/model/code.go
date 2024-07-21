@@ -1,4 +1,4 @@
-package shared
+package model
 
 import "github.com/gofiber/fiber/v2"
 
