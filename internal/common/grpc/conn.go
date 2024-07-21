@@ -3,57 +3,16 @@ package grpc
 import (
 	"crypto/tls"
 	"crypto/x509"
-	"os"
 	"slices"
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/vnworkday/gateway/internal/conf"
-	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
-	"go.uber.org/fx"
-	"go.uber.org/zap"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/keepalive"
 )
 
-type ConnectionParams struct {
-	fx.In
-	Config *conf.Conf
-	Logger *zap.Logger
-}
-
-func NewConnection(params ConnectionParams, targetURI string) *grpc.ClientConn {
-	cfg := params.Config
-
-	cred, err := clientCredentials("", targetURI, os.Getenv("PROFILE"))
-	if err != nil {
-		params.Logger.Panic("failed to create client credentials", zap.Error(err))
-	}
-
-	conn, err := grpc.NewClient(targetURI,
-		grpc.WithTransportCredentials(cred),
-		grpc.WithChainUnaryInterceptor(
-			withLoggingInterceptor(params.Logger),
-			withRetryInterceptor(),
-		),
-		grpc.WithDefaultCallOptions(
-			grpc.MaxCallRecvMsgSize(clientMaxMessageSize(cfg.GRPCMaxMessageSizeMB)),
-			grpc.UseCompressor(gzip.Name),
-		),
-		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
-		grpc.WithKeepaliveParams(clientKeepaliveParams(cfg.GRPCKeepaliveTime, cfg.GRPCKeepaliveTimeout)),
-	)
-	if err != nil {
-		params.Logger.Panic("failed to create grpc connection", zap.Error(err))
-	}
-
-	return conn
-}
-
-func clientKeepaliveParams(
+func ClientKeepaliveParams(
 	keepaliveTime int,
 	keepaliveTimeout int,
 ) keepalive.ClientParameters {
@@ -74,9 +33,7 @@ func clientKeepaliveParams(
 	return params
 }
 
-func clientMaxMessageSize(
-	maxMessageSize int,
-) int {
+func ClientMaxMessageSize(maxMessageSize int) int {
 	if maxMessageSize > 0 {
 		return maxMessageSize * sizeMB
 	}
@@ -84,7 +41,7 @@ func clientMaxMessageSize(
 	return defaultMaxMessageSize * sizeMB
 }
 
-func clientCredentials(
+func ClientCredentials(
 	certPerm string,
 	clientAddr string,
 	profile string,
@@ -139,13 +96,4 @@ func newTLSConfig(certPerm string, profile string) (*tls.Config, error) {
 	tlsConfig.ClientCAs = certPool
 
 	return &tlsConfig, nil
-}
-
-type OnStopParams struct {
-	fx.In
-	Conn *grpc.ClientConn `name:"grpc_account_connection"`
-}
-
-func OnStop(params OnStopParams) error {
-	return params.Conn.Close()
 }

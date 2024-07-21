@@ -8,6 +8,7 @@ require (
 	github.com/go-kit/kit v0.13.0
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/gofiber/swagger v1.1.0
+	github.com/gookit/goutil v0.6.16
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/swaggo/swag v1.16.3

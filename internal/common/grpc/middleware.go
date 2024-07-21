@@ -23,14 +23,14 @@ const (
 	sizeMB = 1 << (10 * 2) //nolint:mnd
 )
 
-func withLoggingInterceptor(logger *zap.Logger) grpc.UnaryClientInterceptor {
+func WithLoggingInterceptor(logger *zap.Logger) grpc.UnaryClientInterceptor {
 	return logging.UnaryClientInterceptor(interceptorLogger(logger), logging.WithLogOnEvents(
 		logging.StartCall,
 		logging.FinishCall,
 	))
 }
 
-func withRetryInterceptor() grpc.UnaryClientInterceptor {
+func WithRetryInterceptor() grpc.UnaryClientInterceptor {
 	return retry.UnaryClientInterceptor(retry.WithBackoff(
 		retry.BackoffExponential(time.Duration(defaultBackoffInterval) * time.Millisecond),
 	))
