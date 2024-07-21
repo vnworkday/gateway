@@ -3,25 +3,55 @@ package grpc
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"os"
 	"slices"
 	"time"
 
 	"github.com/pkg/errors"
+	"github.com/vnworkday/gateway/internal/conf"
+	"go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc"
+	"go.uber.org/fx"
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/keepalive"
 )
 
-const (
-	defaultMaxMessageSize = 4
+type ConnectionParams struct {
+	fx.In
+	Config *conf.Conf
+	Logger *zap.Logger
+}
 
-	defaultKeepaliveTime    = 10
-	defaultKeepaliveTimeout = 5
+func NewConnection(params ConnectionParams, targetURI string) *grpc.ClientConn {
+	cfg := params.Config
 
-	defaultBackoffInterval = 100
+	cred, err := clientCredentials("", targetURI, os.Getenv("PROFILE"))
+	if err != nil {
+		params.Logger.Panic("failed to create client credentials", zap.Error(err))
+	}
 
-	sizeMB = 1 << (10 * 2) //nolint:mnd
-)
+	conn, err := grpc.NewClient(targetURI,
+		grpc.WithTransportCredentials(cred),
+		grpc.WithChainUnaryInterceptor(
+			withLoggingInterceptor(params.Logger),
+			withRetryInterceptor(),
+		),
+		grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(clientMaxMessageSize(cfg.GRPCMaxMessageSizeMB)),
+			grpc.UseCompressor(gzip.Name),
+		),
+		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),
+		grpc.WithKeepaliveParams(clientKeepaliveParams(cfg.GRPCKeepaliveTime, cfg.GRPCKeepaliveTimeout)),
+	)
+	if err != nil {
+		params.Logger.Panic("failed to create grpc connection", zap.Error(err))
+	}
+
+	return conn
+}
 
 func clientKeepaliveParams(
 	keepaliveTime int,
@@ -109,4 +139,13 @@ func newTLSConfig(certPerm string, profile string) (*tls.Config, error) {
 	tlsConfig.ClientCAs = certPool
 
 	return &tlsConfig, nil
+}
+
+type OnStopParams struct {
+	fx.In
+	Conn *grpc.ClientConn `name:"grpc_account_connection"`
+}
+
+func OnStop(params OnStopParams) error {
+	return params.Conn.Close()
 }

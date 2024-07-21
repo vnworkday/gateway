@@ -5,6 +5,7 @@ go 1.22
 require (
 	buf.build/gen/go/ntduycs/vnworkday/grpc/go v1.4.0-20240702043712-f08b6ef89f91.2
 	buf.build/gen/go/ntduycs/vnworkday/protocolbuffers/go v1.34.2-20240702043712-f08b6ef89f91.2
+	github.com/go-kit/kit v0.13.0
 	github.com/gofiber/fiber/v2 v2.52.5
 	github.com/gofiber/swagger v1.1.0
 	github.com/grpc-ecosystem/go-grpc-middleware/v2 v2.1.0
@@ -23,6 +24,8 @@ require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
+	github.com/go-kit/log v0.2.1 // indirect
+	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
