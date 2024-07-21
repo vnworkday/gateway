@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/vnworkday/gateway/internal/common/log"
+
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/healthcheck"
@@ -54,14 +56,10 @@ func NewServer(props ServerProps) *fiber.App {
 	server.Use(recover.New(recover.Config{
 		EnableStackTrace: true,
 		StackTraceHandler: func(ctx *fiber.Ctx, err any) {
-			fields := []zap.Field{
-				zap.String("path", ctx.Path()),
-				zap.String("method", ctx.Method()),
-				zap.Any("error", err),
-			}
+			fields := append(log.CommonHTTPFields(ctx.Path(), ctx.Method()), zap.Any(log.FieldReason, err))
 
 			if props.Config.Profile != profileLocal {
-				fields = append(fields, zap.Stack("stack"))
+				fields = append(fields, zap.Stack(log.FieldStack))
 			}
 
 			props.Logger.Error("panic recovered", fields...)

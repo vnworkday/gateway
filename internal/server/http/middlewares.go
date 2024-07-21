@@ -4,6 +4,8 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/vnworkday/gateway/internal/common/log"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/pkg/errors"
 	"github.com/vnworkday/gateway/internal/conf"
@@ -44,21 +46,17 @@ func LoggingMiddleware(logger *zap.Logger, config *conf.Conf) fiber.Handler {
 		}
 
 		defer func(begin time.Time) {
-			fields := []zap.Field{
-				zap.String("path", ctx.Path()),
-				zap.String("method", ctx.Method()),
-				zap.Duration("duration", time.Since(begin)),
-			}
+			fields := append(log.CommonHTTPFields(ctx.Path(), ctx.Method()), zap.Duration(log.FieldDuration, time.Since(begin)))
 
 			if err != nil {
 				var e *fiber.Error
 				if errors.As(err, &e) {
-					fields = append(fields, zap.Int("status", e.Code), zap.Error(err))
+					fields = append(fields, zap.Int(log.FieldStatus, e.Code), zap.Error(err))
 				} else {
-					fields = append(fields, zap.Int("status", fiber.StatusInternalServerError), zap.Error(err))
+					fields = append(fields, zap.Int(log.FieldStatus, fiber.StatusInternalServerError), zap.Error(err))
 				}
 			} else {
-				fields = append(fields, zap.Int("status", fiber.StatusOK))
+				fields = append(fields, zap.Int(log.FieldStatus, fiber.StatusOK))
 			}
 
 			logger.Info("logging middleware", fields...)

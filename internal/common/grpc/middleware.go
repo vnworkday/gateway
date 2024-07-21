@@ -5,14 +5,36 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/retry"
-	"google.golang.org/grpc"
-
 	"github.com/gofiber/fiber/v2/utils"
-
 	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/logging"
+	"github.com/grpc-ecosystem/go-grpc-middleware/v2/interceptors/retry"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 )
+
+const (
+	defaultMaxMessageSize = 4
+
+	defaultKeepaliveTime    = 10
+	defaultKeepaliveTimeout = 5
+
+	defaultBackoffInterval = 100
+
+	sizeMB = 1 << (10 * 2) //nolint:mnd
+)
+
+func withLoggingInterceptor(logger *zap.Logger) grpc.UnaryClientInterceptor {
+	return logging.UnaryClientInterceptor(interceptorLogger(logger), logging.WithLogOnEvents(
+		logging.StartCall,
+		logging.FinishCall,
+	))
+}
+
+func withRetryInterceptor() grpc.UnaryClientInterceptor {
+	return retry.UnaryClientInterceptor(retry.WithBackoff(
+		retry.BackoffExponential(time.Duration(defaultBackoffInterval) * time.Millisecond),
+	))
+}
 
 // InterceptorLogger adapts zap Logger to interceptor Logger.
 //
@@ -52,23 +74,14 @@ func buildLogFields(fields ...any) []zap.Field {
 			logFields = append(logFields, zap.Int(key, val))
 		case bool:
 			logFields = append(logFields, zap.Bool(key, val))
+		case []byte:
+			logFields = append(logFields, zap.ByteString(key, val))
+		case time.Duration:
+			logFields = append(logFields, zap.Duration(key, val))
 		default:
 			logFields = append(logFields, zap.Any(key, val))
 		}
 	}
 
 	return logFields
-}
-
-func withLoggingInterceptor(logger *zap.Logger) grpc.UnaryClientInterceptor {
-	return logging.UnaryClientInterceptor(interceptorLogger(logger), logging.WithLogOnEvents(
-		logging.StartCall,
-		logging.FinishCall,
-	))
-}
-
-func withRetryInterceptor() grpc.UnaryClientInterceptor {
-	return retry.UnaryClientInterceptor(retry.WithBackoff(
-		retry.BackoffExponential(time.Duration(defaultBackoffInterval) * time.Millisecond),
-	))
 }
