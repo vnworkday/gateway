@@ -9,5 +9,6 @@ import (
 func Register() fx.Option {
 	return fx.Provide(
 		ioc.RegisterWithGroup(NewPort, "routers", new(port.Router)),
+		ioc.RegisterWithName(NewHandler),
 	)
 }

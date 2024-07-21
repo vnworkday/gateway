@@ -11,12 +11,13 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/helmet"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 
+	"github.com/vnworkday/gateway/internal/common/model"
 	"github.com/vnworkday/gateway/internal/common/port"
+	"github.com/vnworkday/gateway/internal/conf"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/pkg/errors"
-	"github.com/vnworkday/gateway/internal/conf"
-	"github.com/vnworkday/gateway/internal/model/shared"
+
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
@@ -104,21 +105,21 @@ func buildHTTPServer(config *conf.Conf) *fiber.App {
 		ReduceMemoryUsage: false, // NOTE: We may want to enable this later if we have memory issues.
 
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-			code := shared.CodeErrInternal
+			code := model.CodeErrInternal
 
 			var ferr *fiber.Error
 			if errors.As(err, &ferr) {
-				code = shared.FromFiberError(ferr)
+				code = model.FromFiberError(ferr)
 			}
 
-			body, _ := json.Marshal(shared.NewError(code))
+			body, _ := json.Marshal(model.NewError(code))
 
 			ctx.Set(fiber.HeaderContentType, fiber.MIMEApplicationJSONCharsetUTF8)
 
 			if ferr != nil {
 				ctx.Status(ferr.Code).Response().SetBody(body)
 			} else {
-				ctx.Status(shared.ToHTTPStatus(code)).Response().SetBody(body)
+				ctx.Status(model.ToHTTPStatus(code)).Response().SetBody(body)
 			}
 
 			return nil

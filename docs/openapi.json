@@ -1,0 +1,506 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "description": "This is the API documentation for VN Workday Gateway API.",
+        "title": "VN Workday Gateway API",
+        "contact": {
+            "name": "Duy Nguyen",
+            "url": "https://github.com/vnworkday/gateway",
+            "email": "ntduy.cs@gmail.com"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT"
+        },
+        "version": "0.1.0"
+    },
+    "paths": {
+        "/tenants": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "List all tenants",
+                "tags": [
+                    "Tenant"
+                ],
+                "summary": "List all tenants",
+                "operationId": "ListTenants",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/tenant.ListTenantsResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "when the user is not authenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Error"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "when the user is not authorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "when the server is unable to handle the request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Create a tenant",
+                "tags": [
+                    "Tenant"
+                ],
+                "summary": "Create a tenant",
+                "operationId": "CreateTenant",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/account.Tenant"
+                            }
+                        }
+                    },
+                    "description": "Tenant object that needs to be created",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/tenant.CreateTenantResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "when the user is not authenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Error"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "when the user is not authorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "when the server is unable to handle the request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tenants/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "JWT": []
+                    },
+                    {
+                        "ApiKey": []
+                    }
+                ],
+                "description": "Get a tenant by ID",
+                "tags": [
+                    "Tenant"
+                ],
+                "summary": "Get a tenant",
+                "operationId": "GetTenant",
+                "parameters": [
+                    {
+                        "description": "Tenant ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/tenant.GetTenantResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "when the provided id is invalid",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Error"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "when the user is not authenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Error"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "when the user is not authorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Error"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "when the tenant is not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "when the server is unable to handle the request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "JWT": []
+                    }
+                ],
+                "description": "Update an existing tenant by ID",
+                "tags": [
+                    "Tenant"
+                ],
+                "summary": "Update a tenant",
+                "operationId": "UpdateTenant",
+                "parameters": [
+                    {
+                        "description": "Tenant ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/account.Tenant"
+                            }
+                        }
+                    },
+                    "description": "Tenant object that needs to be updated",
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/tenant.UpdateTenantResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "when the user is not authenticated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Error"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "when the user is not authorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Error"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "when the server is unable to handle the request",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/model.Error"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "servers": [
+        {
+            "url": "https://stage.vnworkday.com:3000/api/v1"
+        }
+    ],
+    "components": {
+        "securitySchemes": {
+            "ApiKey": {
+                "description": "Please provide a valid API key in the header.",
+                "type": "apiKey",
+                "name": "x-api-key",
+                "in": "header"
+            },
+            "JWT": {
+                "description": "Please provide a valid JWT token in the header.",
+                "type": "apiKey",
+                "name": "Authorization",
+                "in": "header"
+            }
+        },
+        "schemas": {
+            "account.Tenant": {
+                "description": "represents a tenant.",
+                "type": "object",
+                "required": [
+                    "id",
+                    "name"
+                ],
+                "properties": {
+                    "id": {
+                        "description": "ID of the tenant",
+                        "type": "string",
+                        "example": "abcxyz"
+                    },
+                    "name": {
+                        "description": "Name of the tenant",
+                        "type": "string",
+                        "example": "Tenant Name"
+                    }
+                }
+            },
+            "model.Code": {
+                "type": "integer",
+                "enum": [
+                    1000,
+                    1001,
+                    1002,
+                    1003,
+                    2000,
+                    2001,
+                    2002,
+                    2003,
+                    2004
+                ],
+                "x-enum-comments": {
+                    "CodeErrNotFound": "retryable",
+                    "CodeErrTimeout": "retryable",
+                    "CodeErrTooManyRequests": "retryable",
+                    "CodeErrUnavailable": "retryable"
+                },
+                "x-enum-varnames": [
+                    "CodeErrInternal",
+                    "CodeErrTimeout",
+                    "CodeErrTooManyRequests",
+                    "CodeErrUnavailable",
+                    "CodeErrValidation",
+                    "CodeErrNotFound",
+                    "CodeErrUnauthorized",
+                    "CodeErrForbidden",
+                    "CodeErrTooLarge"
+                ]
+            },
+            "model.Error": {
+                "description": "Represents a client-facing API error.",
+                "type": "object",
+                "required": [
+                    "code"
+                ],
+                "properties": {
+                    "code": {
+                        "description": "Code should be unique and identifiable. It is used to determine the type of error.",
+                        "allOf": [
+                            {
+                                "$ref": "#/components/schemas/model.Code"
+                            }
+                        ],
+                        "example": 1000
+                    },
+                    "message": {
+                        "description": "Message is a human-readable description of the error. Should not be used to display to the user.",
+                        "type": "string",
+                        "example": "An unexpected error occurred. Please try again later."
+                    },
+                    "title": {
+                        "description": "Title is a short, human-readable title of the error. It is used to determine the type of error.",
+                        "type": "string",
+                        "example": "Internal Server Error"
+                    }
+                }
+            },
+            "tenant.CreateTenantResponse": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer"
+                    },
+                    "item": {
+                        "$ref": "#/components/schemas/tenant.Tenant"
+                    }
+                }
+            },
+            "tenant.GetTenantResponse": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer"
+                    },
+                    "item": {
+                        "$ref": "#/components/schemas/tenant.Tenant"
+                    }
+                }
+            },
+            "tenant.ListTenantsResponse": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/tenant.Tenant"
+                        }
+                    },
+                    "next": {
+                        "type": "string"
+                    },
+                    "previous": {
+                        "type": "string"
+                    },
+                    "total": {
+                        "type": "integer"
+                    },
+                    "total_pages": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "tenant.Tenant": {
+                "type": "object",
+                "properties": {
+                    "created_at": {
+                        "type": "string"
+                    },
+                    "domain": {
+                        "type": "string"
+                    },
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "production_type": {
+                        "type": "integer"
+                    },
+                    "self_registration_enabled": {
+                        "type": "boolean"
+                    },
+                    "status": {
+                        "type": "integer"
+                    },
+                    "subscription_type": {
+                        "type": "integer"
+                    },
+                    "timezone": {
+                        "type": "string"
+                    },
+                    "updated_at": {
+                        "type": "string"
+                    }
+                }
+            },
+            "tenant.UpdateTenantResponse": {
+                "type": "object",
+                "properties": {
+                    "code": {
+                        "type": "integer"
+                    },
+                    "item": {
+                        "$ref": "#/components/schemas/tenant.Tenant"
+                    }
+                }
+            }
+        }
+    }
+}

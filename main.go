@@ -9,8 +9,8 @@ import (
 // @version					0.1.0
 // @description				This is the API documentation for VN Workday Gateway API.
 // @BasePath					/api/v1
-// @schemes					http https
-// @host						http://localhost:3000
+// @schemes					https
+// @host						stage.vnworkday.com:3000
 // @produces					application/json
 // @contact.name				Duy Nguyen
 // @contact.email				ntduy.cs@gmail.com

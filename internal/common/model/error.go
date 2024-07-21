@@ -1,4 +1,4 @@
-package shared
+package model
 
 // Error model
 // @Description Represents a client-facing API error.

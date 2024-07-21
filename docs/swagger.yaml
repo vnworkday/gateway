@@ -1,42 +1,5 @@
 basePath: /api/v1
 definitions:
-  account.ListTenantsResponse:
-    description: represents a list of tenants with pagination information in the response.
-    properties:
-      items:
-        description: Items is a list of tenants
-        items:
-          $ref: '#/definitions/account.Tenant'
-        type: array
-      next_token:
-        description: |-
-          NextToken is a token that can be used to retrieve the next page of results.
-          If this field is not present, it means that there are no more results to retrieve.
-        example: Vk4gV29ya2RheSBFeGFtcGxl
-        format: base64
-        type: string
-      previous_token:
-        description: |-
-          PreviousToken a token that can be used to retrieve the previous page of results.
-          If this field is not present, it means that there are no more results to retrieve.
-        example: Vk4gV29ya2RheSBFeGFtcGxl
-        format: base64
-        type: string
-      total:
-        description: Total is the total number of items in the list.
-        example: 100
-        minimum: 0
-        type: integer
-      total_pages:
-        description: TotalPages is the total number of pages in the list.
-        example: 10
-        minimum: 0
-        type: integer
-    required:
-    - items
-    - total
-    - total_pages
-    type: object
   account.Tenant:
     description: represents a tenant.
     properties:
@@ -52,7 +15,7 @@ definitions:
     - id
     - name
     type: object
-  shared.Code:
+  model.Code:
     enum:
     - 1000
     - 1001
@@ -79,12 +42,12 @@ definitions:
     - CodeErrUnauthorized
     - CodeErrForbidden
     - CodeErrTooLarge
-  shared.Error:
+  model.Error:
     description: Represents a client-facing API error.
     properties:
       code:
         allOf:
-        - $ref: '#/definitions/shared.Code'
+        - $ref: '#/definitions/model.Code'
         description: Code should be unique and identifiable. It is used to determine
           the type of error.
         example: 1000
@@ -101,7 +64,68 @@ definitions:
     required:
     - code
     type: object
-host: http://localhost:3000
+  tenant.CreateTenantResponse:
+    properties:
+      code:
+        type: integer
+      item:
+        $ref: '#/definitions/tenant.Tenant'
+    type: object
+  tenant.GetTenantResponse:
+    properties:
+      code:
+        type: integer
+      item:
+        $ref: '#/definitions/tenant.Tenant'
+    type: object
+  tenant.ListTenantsResponse:
+    properties:
+      code:
+        type: integer
+      items:
+        items:
+          $ref: '#/definitions/tenant.Tenant'
+        type: array
+      next:
+        type: string
+      previous:
+        type: string
+      total:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  tenant.Tenant:
+    properties:
+      created_at:
+        type: string
+      domain:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      production_type:
+        type: integer
+      self_registration_enabled:
+        type: boolean
+      status:
+        type: integer
+      subscription_type:
+        type: integer
+      timezone:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  tenant.UpdateTenantResponse:
+    properties:
+      code:
+        type: integer
+      item:
+        $ref: '#/definitions/tenant.Tenant'
+    type: object
+host: stage.vnworkday.com:3000
 info:
   contact:
     email: ntduy.cs@gmail.com
@@ -124,19 +148,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/account.ListTenantsResponse'
+            $ref: '#/definitions/tenant.ListTenantsResponse'
         "401":
           description: when the user is not authenticated
           schema:
-            $ref: '#/definitions/shared.Error'
+            $ref: '#/definitions/model.Error'
         "403":
           description: when the user is not authorized
           schema:
-            $ref: '#/definitions/shared.Error'
+            $ref: '#/definitions/model.Error'
         "500":
           description: when the server is unable to handle the request
           schema:
-            $ref: '#/definitions/shared.Error'
+            $ref: '#/definitions/model.Error'
       security:
       - JWT: []
       summary: List all tenants
@@ -160,19 +184,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/account.Tenant'
+            $ref: '#/definitions/tenant.CreateTenantResponse'
         "401":
           description: when the user is not authenticated
           schema:
-            $ref: '#/definitions/shared.Error'
+            $ref: '#/definitions/model.Error'
         "403":
           description: when the user is not authorized
           schema:
-            $ref: '#/definitions/shared.Error'
+            $ref: '#/definitions/model.Error'
         "500":
           description: when the server is unable to handle the request
           schema:
-            $ref: '#/definitions/shared.Error'
+            $ref: '#/definitions/model.Error'
       security:
       - JWT: []
       summary: Create a tenant
@@ -194,27 +218,27 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/account.Tenant'
+            $ref: '#/definitions/tenant.GetTenantResponse'
         "400":
           description: when the provided id is invalid
           schema:
-            $ref: '#/definitions/shared.Error'
+            $ref: '#/definitions/model.Error'
         "401":
           description: when the user is not authenticated
           schema:
-            $ref: '#/definitions/shared.Error'
+            $ref: '#/definitions/model.Error'
         "403":
           description: when the user is not authorized
           schema:
-            $ref: '#/definitions/shared.Error'
+            $ref: '#/definitions/model.Error'
         "404":
           description: when the tenant is not found
           schema:
-            $ref: '#/definitions/shared.Error'
+            $ref: '#/definitions/model.Error'
         "500":
           description: when the server is unable to handle the request
           schema:
-            $ref: '#/definitions/shared.Error'
+            $ref: '#/definitions/model.Error'
       security:
       - JWT: []
       - ApiKey: []
@@ -244,26 +268,25 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/account.Tenant'
+            $ref: '#/definitions/tenant.UpdateTenantResponse'
         "401":
           description: when the user is not authenticated
           schema:
-            $ref: '#/definitions/shared.Error'
+            $ref: '#/definitions/model.Error'
         "403":
           description: when the user is not authorized
           schema:
-            $ref: '#/definitions/shared.Error'
+            $ref: '#/definitions/model.Error'
         "500":
           description: when the server is unable to handle the request
           schema:
-            $ref: '#/definitions/shared.Error'
+            $ref: '#/definitions/model.Error'
       security:
       - JWT: []
       summary: Update a tenant
       tags:
       - Tenant
 schemes:
-- http
 - https
 securityDefinitions:
   ApiKey:

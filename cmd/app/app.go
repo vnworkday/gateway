@@ -9,7 +9,6 @@ import (
 	"github.com/vnworkday/gateway/internal/usecase"
 
 	"github.com/vnworkday/gateway/internal/conf"
-	"github.com/vnworkday/gateway/internal/handlers"
 	"go.uber.org/fx"
 	"go.uber.org/zap"
 )
@@ -18,12 +17,6 @@ func Start() {
 	fx.New(
 		conf.Register(),
 		logger.Register(),
-		fx.Module("handlers",
-			fx.Decorate(func(logger *zap.Logger) *zap.Logger {
-				return logger.Named("handlers")
-			}),
-			handlers.Register(),
-		),
 		usecase.Register(),
 		fx.Module("grpc",
 			fx.Decorate(func(logger *zap.Logger) *zap.Logger {
